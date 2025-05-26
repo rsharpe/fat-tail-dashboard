@@ -157,8 +157,62 @@
       <input type="file" id="csvFile" accept=".csv" />
       <div class="csv-table" id="csvOutput"></div>
     </div>
+
+    <div class="card full-width">
+      <h2>Journal Log History (Live from Firebase)</h2>
+      <button onclick="loadTradeNotes()">Load Saved Notes</button>
+      <div id="remoteHistory"></div>
+    </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIza...",
+      authDomain: "fattailjournal.firebaseapp.com",
+      projectId: "fattailjournal",
+      storageBucket: "fattailjournal.appspot.com",
+      messagingSenderId: "...",
+      appId: "1:...:web:..."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.saveTradeNote = async function () {
+      const note = document.getElementById('tradeNotes').value;
+      if (!note) return;
+
+      try {
+        await addDoc(collection(db, "tradeNotes"), {
+          note: note,
+          timestamp: new Date().toISOString()
+        });
+
+        const timestamp = new Date().toLocaleString();
+        const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
+        document.getElementById('tradeHistory').innerHTML += entry;
+        document.getElementById('tradeNotes').value = '';
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
+
+    window.loadTradeNotes = async function () {
+      const notesRef = collection(db, "tradeNotes");
+      const q = query(notesRef, orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const time = new Date(data.timestamp).toLocaleString();
+        container.innerHTML += `<p><strong>${time}</strong>: ${data.note}</p>`;
+      });
+    }
+  </script>
   <script>
     function calculateSigmaZones() {
       const spot = parseFloat(document.getElementById('spot').value);
