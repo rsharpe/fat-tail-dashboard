@@ -6,6 +6,7 @@
   <title>Fat Tail Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
   <script type="module">
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
@@ -20,9 +21,13 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
     // Expose saveTradeNote globally
     window.saveTradeNote = async function () {
+      const user = auth.currentUser;
+      if (!user) return alert("Please sign in to save notes.");
       const note = document.getElementById('tradeNotes').value;
       if (!note) return;
 
@@ -40,7 +45,38 @@
         console.error("Error adding document: ", e);
       }
     }
-  </script>
+  auth.onAuthStateChanged(user => {
+      const status = document.getElementById('userStatus');
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (user) {
+        status.textContent = `Logged in as: ${user.displayName}`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+      } else {
+        status.textContent = 'Not logged in';
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+      }
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (e) {
+        console.error("Login error", e);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.error("Logout error", e);
+      }
+    });
+
+</script>
   <style>
     body {
       font-family: 'Roboto Mono', monospace;
@@ -167,7 +203,9 @@
     <div class="card full-width">
       <h2>Pro Mode Login</h2>
       <p>This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</p>
-      <button onclick="alert('Login coming soon — Firebase Auth integration in progress.')">Login with Google</button>
+      <button id="loginBtn">Login with Google</button>
+      <button id="logoutBtn" style="display:none;">Logout</button>
+      <p id="userStatus">Not logged in</p>
     </div>
   </div>
 
