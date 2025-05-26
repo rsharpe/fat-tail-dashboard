@@ -146,10 +146,27 @@
     }
 
     function saveTradeNote() {
-      const note = document.getElementById('tradeNotes').value;
-      if (!note) return;
-      const timestamp = new Date().toLocaleString();
-      const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
+  const note = document.getElementById('tradeNotes').value;
+  if (!note) return;
+
+  const entry = {
+    note: note
+  };
+
+  fetch('https://script.google.com/macros/s/AKfycbzAqKNHtjScD0_wiiHfegU3cOThqahrLrpyRyVduUW9uHObkL5RmvonwXCJcU6U9VAp1A/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(entry)
+  });
+
+  const timestamp = new Date().toLocaleString();
+  const localEntry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
+  document.getElementById('tradeHistory').innerHTML += localEntry;
+  document.getElementById('tradeNotes').value = '';
+}</strong>: ${note}</p>`;
       document.getElementById('tradeHistory').innerHTML += entry;
       document.getElementById('tradeNotes').value = '';
     }
