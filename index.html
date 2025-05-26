@@ -6,7 +6,6 @@
   <title>Fat Tail Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
   <script type="module">
-    // Firebase setup
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
@@ -22,6 +21,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Expose saveTradeNote globally
     window.saveTradeNote = async function () {
       const note = document.getElementById('tradeNotes').value;
       if (!note) return;
