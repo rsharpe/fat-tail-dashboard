@@ -7,15 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIza...",
@@ -244,9 +236,10 @@ window.filterTradeNotes = function () {
   const notes = window._firebaseNotes || [];
   if (!notes.length) return alert("No notes loaded to export.");
 
-  const csvHeader = "Timestamp,Note\\n";
-const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}"`).join("\\n");
-
+  const csvHeader = "Timestamp,Note
+";
+  const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}"`).join("
+");
   const csvContent = csvHeader + csvRows;
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -259,5 +252,15 @@ const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replac
   document.body.removeChild(link);
 };
 </script>
+<footer style="margin-top: 3rem; text-align: center; color: #00e6e6; font-size: 0.9rem;">
+  <hr style="border-color: #00ffcc;">
+  <p>Affiliate Resources:</p>
+  <p>
+    <a href="https://www.tradingview.com/?aff_id=YOUR_ID" target="_blank" style="color: #00ffcc;">TradingView Charts</a> |
+    <a href="https://www.tdameritrade.com" target="_blank" style="color: #00ffcc;">ThinkOrSwim by TDAmeritrade</a> |
+    <a href="https://optionalpha.com/?ref=YOUR_ID" target="_blank" style="color: #00ffcc;">Option Alpha Education</a>
+  </p>
+  <p><strong>Pro Mode coming soon:</strong> analytics, strategy tagging, and cloud sync — stay tuned.</p>
+</footer>
 </body>
 </html>
