@@ -160,6 +160,8 @@
 
     <div class="card full-width">
       <h2>Journal Log History (Live from Firebase)</h2>
+      <label for="searchFilter">Search notes:</label>
+      <input type="text" id="searchFilter" placeholder="e.g., SPX, butterfly, IV" oninput="filterTradeNotes()" />
       <button onclick="loadTradeNotes()">Load Saved Notes</button>
       <div id="remoteHistory"></div>
     </div>
@@ -206,56 +208,30 @@
       const querySnapshot = await getDocs(q);
       const container = document.getElementById("remoteHistory");
       container.innerHTML = '';
+      window._firebaseNotes = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
         const time = new Date(data.timestamp).toLocaleString();
-        container.innerHTML += `<p><strong>${time}</strong>: ${data.note}</p>`;
+        const entry = {
+          time,
+          note: data.note
+        };
+        window._firebaseNotes.push(entry);
       });
-    }
-  </script>
-  <script>
-    function calculateSigmaZones() {
-      const spot = parseFloat(document.getElementById('spot').value);
-      const iv = parseFloat(document.getElementById('iv').value) / 100;
-      const dte = parseFloat(document.getElementById('dte').value);
-      if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
-        document.getElementById('sigmaResults').innerText = 'Please fill in all values correctly.';
-        return;
-      }
-      const sqrtT = Math.sqrt(dte / 365);
-      const sd = spot * iv * sqrtT;
-      let output = '';
-      for (let i = 1; i <= 5; i++) {
-        const low = (spot - i * sd).toFixed(2);
-        const high = (spot + i * sd).toFixed(2);
-        output += `<p><strong>${i}&sigma; range:</strong> ${low} – ${high}</p>`;
-      }
-      document.getElementById('sigmaResults').innerHTML = output;
-    }
-
-    document.getElementById('csvFile').addEventListener('change', function (e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const text = event.target.result;
-        const rows = text.split('\n').map(row => row.split(','));
-        const table = document.createElement('table');
-        rows.forEach((row, rowIndex) => {
-          const tr = document.createElement('tr');
-          row.forEach(cell => {
-            const td = document.createElement(rowIndex === 0 ? 'th' : 'td');
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          table.appendChild(tr);
-        });
-        const output = document.getElementById('csvOutput');
-        output.innerHTML = '';
-        output.appendChild(table);
-      };
+      filterTradeNotes();
+    };
       reader.readAsText(file);
     });
+  function filterTradeNotes() {
+    const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+    const container = document.getElementById("remoteHistory");
+    container.innerHTML = '';
+    (window._firebaseNotes || []).forEach(entry => {
+      if (entry.note.toLowerCase().includes(searchValue)) {
+        container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
+      }
+    });
+  }
   </script>
 </body>
 </html>
