@@ -160,6 +160,7 @@
 
     <div class="card full-width">
       <h2>Journal Log History (Live from Firebase)</h2>
+      <button onclick="exportNotesToCSV()">Export to CSV</button><br/><br/>
       <label for="searchFilter">Search notes:</label>
       <input type="text" id="searchFilter" placeholder="e.g., SPX, butterfly, IV" oninput="filterTradeNotes()" />
       <button onclick="loadTradeNotes()">Load Saved Notes</button>
@@ -202,7 +203,7 @@
       }
     }
 
-       window.loadTradeNotes = async function () {
+    window.loadTradeNotes = async function () {
       const notesRef = collection(db, "tradeNotes");
       const q = query(notesRef, orderBy("timestamp", "desc"));
       const querySnapshot = await getDocs(q);
@@ -221,17 +222,35 @@
       filterTradeNotes();
     };
 
-    window.filterTradeNotes = function () {
-      const searchValue = document.getElementById("searchFilter").value.toLowerCase();
-      const container = document.getElementById("remoteHistory");
-      container.innerHTML = '';
-      (window._firebaseNotes || []).forEach(entry => {
-        if (entry.note.toLowerCase().includes(searchValue)) {
-          container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
-        }
-      });
-    }
+window.filterTradeNotes = function () {
+    const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+    const container = document.getElementById("remoteHistory");
+    container.innerHTML = '';
+    (window._firebaseNotes || []).forEach(entry => {
+      if (entry.note.toLowerCase().includes(searchValue)) {
+        container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
+      }
+    });
+  }
+  window.exportNotesToCSV = function () {
+  const notes = window._firebaseNotes || [];
+  if (!notes.length) return alert("No notes loaded to export.");
 
-  </script>
+  const csvHeader = "Timestamp,Note
+";
+  const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}"`).join("
+");
+  const csvContent = csvHeader + csvRows;
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "fat_tail_journal.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+</script>
 </body>
 </html>
