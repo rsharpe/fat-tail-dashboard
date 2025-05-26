@@ -220,7 +220,7 @@
       });
       filterTradeNotes();
     };
-  function filterTradeNotes() {
+  window.filterTradeNotes = function () {
     const searchValue = document.getElementById("searchFilter").value.toLowerCase();
     const container = document.getElementById("remoteHistory");
     container.innerHTML = '';
