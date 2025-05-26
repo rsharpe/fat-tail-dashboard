@@ -202,7 +202,7 @@
       }
     }
 
-    window.loadTradeNotes = async function () {
+       window.loadTradeNotes = async function () {
       const notesRef = collection(db, "tradeNotes");
       const q = query(notesRef, orderBy("timestamp", "desc"));
       const querySnapshot = await getDocs(q);
@@ -220,16 +220,18 @@
       });
       filterTradeNotes();
     };
-  window.filterTradeNotes = function () {
-    const searchValue = document.getElementById("searchFilter").value.toLowerCase();
-    const container = document.getElementById("remoteHistory");
-    container.innerHTML = '';
-    (window._firebaseNotes || []).forEach(entry => {
-      if (entry.note.toLowerCase().includes(searchValue)) {
-        container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
-      }
-    });
-  }
+
+    window.filterTradeNotes = function () {
+      const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+      (window._firebaseNotes || []).forEach(entry => {
+        if (entry.note.toLowerCase().includes(searchValue)) {
+          container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
+        }
+      });
+    }
+
   </script>
 </body>
 </html>
