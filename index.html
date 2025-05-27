@@ -51,14 +51,17 @@
       const status = document.getElementById('userStatus');
       const loginBtn = document.getElementById('loginBtn');
       const logoutBtn = document.getElementById('logoutBtn');
+      const proTools = document.getElementById('proTools');
       if (user) {
         status.textContent = `Logged in as: ${user.displayName}`;
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
+        proTools.style.display = 'block';
       } else {
         status.textContent = 'Not logged in';
         loginBtn.style.display = 'inline-block';
         logoutBtn.style.display = 'none';
+        proTools.style.display = 'none';
       }
     });
 
@@ -112,6 +115,43 @@ window.handleTagInput = function(event) {
       input.value = '';
     }
   }
+};
+window.addSuggestedTag = function(tagText) {
+  const existingTags = Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent);
+  if (!existingTags.includes(tagText)) {
+    const pill = document.createElement('span');
+    pill.textContent = tagText;
+    pill.className = 'tag';
+    pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;margin:2px;';
+    pill.onclick = () => pill.remove();
+    document.getElementById('tagInputContainer').appendChild(pill);
+  }
+};
+window.displayAnalytics = function () {
+  const panel = document.getElementById("analyticsPanel");
+  const notes = window._firebaseNotes || [];
+  const tagStats = {};
+
+  notes.forEach(note => {
+    (note.tags || []).forEach(tag => {
+      if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
+      tagStats[tag].count++;
+      // Placeholder P/L logic (random for now)
+      tagStats[tag].pnl += Math.round((Math.random() - 0.5) * 200); // +/- $100
+    });
+  });
+
+  const chartData = Object.entries(tagStats).map(([tag, data]) => `
+    <div style="margin-bottom:0.25rem;">
+      <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl}
+      <div style="height: 8px; background:#ccc; width:100%;">
+        <div style="height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;"></div>
+      </div>
+    </div>`).join('');
+
+  panel.innerHTML = Object.keys(tagStats).length ? chartData :
+    '<p>No tag data available. Save some tagged trades to see analytics.</p>';
+};
 };
 </script>
   <style>
@@ -226,7 +266,18 @@ a:hover {
     <div class="card">
       <h2>Manual Trade Journal</h2>
       <label for="tradeNotes">Trade Notes:</label>
-      <div id="tagInputContainer" style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 0.5rem;"></div>
+      $1
+        <div id="tagSuggestions" style="margin-top: 0.5rem;">
+          <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
+          <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
+          <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
+          <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
+          <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
+          <button type="button" onclick="addSuggestedTag('credit')">credit</button>
+          <button type="button" onclick="addSuggestedTag('debit')">debit</button>
+          <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
+        </div>
+      $2
       <input id="tagInput" type="text" placeholder="Enter tag and press enter" onkeydown="handleTagInput(event)" style="width: 100%; padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px;" />
       <textarea id="tradeNotes" rows="6" placeholder="SPX 6100/6150/6200 OTM butterfly, 7 DTE, IV: 16%..."></textarea>
       <button onclick="saveTradeNote()">Save Note</button>
@@ -253,12 +304,20 @@ a:hover {
       <div id="remoteHistory"></div>
     </div>
 
-    <div class="card full-width">
-      <h2>Pro Mode Login</h2>
-      <p>This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</p>
-      <button id="loginBtn">Login with Google</button>
-      <button id="logoutBtn" style="display:none;">Logout</button>
-      <p id="userStatus">Not logged in</p>
+    <div class="card full-width" id="proModeCard">
+  <h2>Pro Mode Login</h2>
+  <p>This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</p>
+  <button id="loginBtn">Login with Google</button>
+  <button id="logoutBtn" style="display:none;">Logout</button>
+  <p id="userStatus">Not logged in</p>
+</div>
+
+<div class="card full-width" id="proTools" style="display: none;">
+  <h2>📊 Pro Mode Analytics</h2>
+  <div id="analyticsPanel">
+    <p style="font-style: italic;">Loading tag-based performance metrics...</p>
+  </div>
+</div>
     </div>
   </div>
 
@@ -315,6 +374,7 @@ a:hover {
         window._firebaseNotes.push(entry);
       });
       filterTradeNotes();
+      if (document.getElementById('proTools').style.display === 'block') displayAnalytics();
     };
 
 window.filterTradeNotes = function () {
