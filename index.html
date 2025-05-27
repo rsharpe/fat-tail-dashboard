@@ -138,8 +138,39 @@ window.displayAnalytics = function () {
       if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
       tagStats[tag].count++;
       // Placeholder P/L logic (random for now)
-      tagStats[tag].pnl += Math.round((Math.random() - 0.5) * 200); // +/- $100
+      window.displayAnalytics = function () {
+  const panel = document.getElementById("analyticsPanel");
+  const notes = window._firebaseNotes || [];
+  const tagStats = {};
+
+  notes.forEach(note => {
+    const noteText = note.note || "";
+    const match = noteText.match(/P\/?L\s*[:=]?\s*[-+]?\$?-?\d+(\.\d+)?/i);
+    let pnlValue = 0;
+    if (match) {
+      const num = match[0].match(/-?\d+(\.\d+)?/);
+      if (num) pnlValue = parseFloat(num[0]);
+    }
+
+    (note.tags || []).forEach(tag => {
+      if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
+      tagStats[tag].count++;
+      tagStats[tag].pnl += pnlValue;
     });
+  });
+
+  const chartData = Object.entries(tagStats).map(([tag, data]) => {
+    return `<div style='margin-bottom:0.25rem;'>
+      <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl.toFixed(2)}
+      <div style='height: 8px; background:#ccc; width:100%;'>
+        <div style='height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;'></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = Object.keys(tagStats).length ? chartData :
+    '<p>No tag data available. Save some tagged trades to see analytics.</p>';
+};
   });
 
   const chartData = Object.entries(tagStats).map(([tag, data]) => `
