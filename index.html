@@ -134,35 +134,25 @@ window.displayAnalytics = function () {
   const tagStats = {};
 
   notes.forEach(note => {
-    const noteText = note.note || "";
-    const match = noteText.match(/P\/?L\s*[:=]?\s*[-+]?\$?-?\d+(\.\d+)?/i);
-    let pnlValue = 0;
-    if (match) {
-      const num = match[0].match(/-?\d+(\.\d+)?/);
-      if (num) pnlValue = parseFloat(num[0]);
-    }
-
     (note.tags || []).forEach(tag => {
       if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
       tagStats[tag].count++;
-      tagStats[tag].pnl += pnlValue;
+      // Placeholder P/L logic (random for now)
+      tagStats[tag].pnl += Math.round((Math.random() - 0.5) * 200); // +/- $100
     });
   });
 
-  const chartData = Object.entries(tagStats).map(([tag, data]) => {
-    return `<div style='margin-bottom:0.25rem;'>
-      <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl.toFixed(2)}
-      <div style='height: 8px; background:#ccc; width:100%;'>
-        <div style='height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;'></div>
+  const chartData = Object.entries(tagStats).map(([tag, data]) => `
+    <div style="margin-bottom:0.25rem;">
+      <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl}
+      <div style="height: 8px; background:#ccc; width:100%;">
+        <div style="height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;"></div>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   panel.innerHTML = Object.keys(tagStats).length ? chartData :
     '<p>No tag data available. Save some tagged trades to see analytics.</p>';
 };
-
-
 };
 </script>
   <style>
@@ -172,7 +162,7 @@ window.displayAnalytics = function () {
       color: #ff5e99;
       margin: 0;
       padding: 0.4rem;
-      font-size: 0.65rem;
+      font-size: 0.5rem;
     }
     h1, h2 {
       color: #0d3b3f;
@@ -180,13 +170,13 @@ window.displayAnalytics = function () {
     .container {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
-      max-width: 1200px;
+      gap: 1.5rem;
+      max-width: 900px;
       margin: 0 auto;
     }
     .card {
       background-color: #fff6ea;
-      padding: 0.5rem;
+      padding: 0.375rem;
       border: 1px solid #081e1f;
       border-radius: 0.5rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 10px rgba(13, 59, 63, 0.3);
