@@ -37,47 +37,7 @@
       border: 1px solid #134d4a;
     }
   </style>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js">function login() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).then(result => {
-    const user = result.user;
-    document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('loginBtn').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'inline';
-    document.getElementById('proTools').style.display = 'block';
-  });
-}
-
-function logout() {
-  firebase.auth().signOut().then(() => {
-    document.getElementById('userEmail').textContent = '';
-    document.getElementById('loginBtn').style.display = 'inline';
-    document.getElementById('logoutBtn').style.display = 'none';
-    document.getElementById('proTools').style.display = 'none';
-  });
-}
-
-firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('loginBtn').style.display = 'none';
-    document.getElementById('logoutBtn').style.display = 'inline';
-    document.getElementById('proTools').style.display = 'block';
-  } else {
-    document.getElementById('userEmail').textContent = '';
-    document.getElementById('loginBtn').style.display = 'inline';
-    document.getElementById('logoutBtn').style.display = 'none';
-    document.getElementById('proTools').style.display = 'none';
-  }
-});
-function exportToPDF() {
-  const doc = new window.jspdf.jsPDF();
-  const history = document.getElementById("remoteHistory").innerText;
-  doc.text(history, 10, 10);
-  doc.save("FatTail_TradeJournal.pdf");
-}
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -95,16 +55,16 @@ function exportToPDF() {
       <label for="tagInput">Tags (press Enter to add):</label>
       <input type="text" id="tagInput" placeholder="Enter tag and press enter" />
       <div id="tagInputContainer"></div>
-<div id="tagSuggestions" style="margin-top: 0.5rem;">
-  <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
-  <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
-  <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
-  <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
-  <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
-  <button type="button" onclick="addSuggestedTag('credit')">credit</button>
-  <button type="button" onclick="addSuggestedTag('debit')">debit</button>
-  <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
-</div>
+      <div id="tagSuggestions" style="margin-top: 0.5rem;">
+        <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
+        <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
+        <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
+        <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
+        <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
+        <button type="button" onclick="addSuggestedTag('credit')">credit</button>
+        <button type="button" onclick="addSuggestedTag('debit')">debit</button>
+        <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
+      </div>
 
       <button onclick="saveTradeNote()">Save Note</button>
       <div id="tradeHistory"></div>
@@ -124,6 +84,7 @@ function exportToPDF() {
     <div class="card" id="proTools">
       <h2>Pro Mode Analytics</h2>
       <div id="analyticsPanel"></div>
+    </div>
 
     <div class="card">
       <h2>Export Journal</h2>
@@ -137,142 +98,8 @@ function exportToPDF() {
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIza...",
-      authDomain: "fattailjournal.firebaseapp.com",
-      projectId: "fattailjournal",
-      storageBucket: "fattailjournal.appspot.com",
-      messagingSenderId: "...",
-      appId: "1:...:web:..."
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-const auth = firebase.auth();
-
-    window.saveTradeNote = async function () {
-      const note = document.getElementById('tradeNotes').value;
-      const tags = Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent);
-      if (!note) return;
-
-      try {
-        await addDoc(collection(db, "tradeNotes"), {
-          note: note,
-          tags: tags,
-          timestamp: new Date().toISOString()
-        });
-
-        const timestamp = new Date().toLocaleString();
-        const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
-        document.getElementById('tradeHistory').innerHTML += entry;
-        document.getElementById('tradeNotes').value = '';
-        document.getElementById('tagInputContainer').innerHTML = '';
-        document.getElementById('tagInput').value = '';
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-    }
-
-    window.loadTradeNotes = async function () {
-      const notesRef = collection(db, "tradeNotes");
-      const q = query(notesRef, orderBy("timestamp", "desc"));
-      const querySnapshot = await getDocs(q);
-      const container = document.getElementById("remoteHistory");
-      container.innerHTML = '';
-      window._firebaseNotes = [];
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        const time = new Date(data.timestamp).toLocaleString();
-        const entry = {
-          time,
-          note: data.note,
-          tags: data.tags || []
-        };
-        window._firebaseNotes.push(entry);
-      });
-      filterTradeNotes();
-      if (document.getElementById('proTools')) displayAnalytics();
-    };
-
-    window.displayAnalytics = function () {
-      const panel = document.getElementById("analyticsPanel");
-      const notes = window._firebaseNotes || [];
-      const tagStats = {};
-
-      notes.forEach(note => {
-        const noteText = note.note || "";
-        const match = noteText.match(/P\/?L\s*[:=]?\s*[-+]?\$?-?\d+(\.\d+)?/i);
-        let pnlValue = 0;
-        if (match) {
-          const num = match[0].match(/-?\d+(\.\d+)?/);
-          if (num) pnlValue = parseFloat(num[0]);
-        }
-
-        (note.tags || []).forEach(tag => {
-          if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
-          tagStats[tag].count++;
-          tagStats[tag].pnl += pnlValue;
-        });
-      });
-
-      const chartData = Object.entries(tagStats).map(([tag, data]) => {
-        return `<div style='margin-bottom:0.25rem;'>
-          <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl.toFixed(2)}
-          <div style='height: 8px; background:#ccc; width:100%;'>
-            <div style='height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;'></div>
-          </div>
-        </div>`;
-      }).join('');
-
-      panel.innerHTML = Object.keys(tagStats).length ? chartData :
-        '<p>No tag data available. Save some tagged trades to see analytics.</p>';
-    };
-
-    window.filterTradeNotes = function () {
-      const searchValue = document.getElementById("searchFilter").value.toLowerCase();
-      const tagValue = document.getElementById("tagFilter").value.toLowerCase();
-      const container = document.getElementById("remoteHistory");
-      container.innerHTML = '';
-      (window._firebaseNotes || []).forEach(entry => {
-        const matchesNote = entry.note.toLowerCase().includes(searchValue);
-        const matchesTag = tagValue ? entry.tags.some(tag => tag.toLowerCase().includes(tagValue)) : true;
-        if (matchesNote && matchesTag) {
-          container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}<br><em>Tags: ${entry.tags.join(', ')}</em></p>`;
-        }
-      });
-    };
-  document.getElementById('tagInput').addEventListener('keydown', function (e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    const tagText = e.target.value.trim();
-    if (tagText !== '') {
-      const pill = document.createElement('span');
-      pill.textContent = tagText;
-      pill.className = 'tag';
-      pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;margin:2px;cursor:pointer;';
-      pill.onclick = () => pill.remove();
-      document.getElementById('tagInputContainer').appendChild(pill);
-      e.target.value = '';
-    }
-  }
-});
-
-window.addSuggestedTag = function(tagText) {
-  const existingTags = Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent);
-  if (!existingTags.includes(tagText)) {
-    const pill = document.createElement('span');
-    pill.textContent = tagText;
-    pill.className = 'tag';
-    pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;margin:2px;cursor:pointer;';
-    pill.onclick = () => pill.remove();
-    document.getElementById('tagInputContainer').appendChild(pill);
-  }
-};
-</script>
+  <script type="module" src="app.js"></script>
+</body>
 <footer style="text-align:center; color:#1f4046; font-size:0.85rem; padding-top:1rem;">
   <p>
     <a href="https://www.tradingview.com" target="_blank" style="color:#1f4046; text-decoration:none;">TradingView</a> |
@@ -283,5 +110,4 @@ window.addSuggestedTag = function(tagText) {
     <a href="https://www.interactivebrokers.com" target="_blank" style="color:#1f4046; text-decoration:none;">Interactive Brokers</a>
   </p>
 </footer>
-</body>
 </html>
