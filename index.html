@@ -263,11 +263,11 @@ a:hover {
       <button onclick="calculateSigmaZones()">Calculate Zones</button>
       <div class="result" id="sigmaResults"></div>
     </div>
-
+    
     <div class="card">
       <h2>Manual Trade Journal</h2>
       <label for="tradeNotes">Trade Notes:</label>
-      $1
+    
         <div id="tagSuggestions" style="margin-top: 0.5rem;">
           <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
           <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
@@ -278,7 +278,7 @@ a:hover {
           <button type="button" onclick="addSuggestedTag('debit')">debit</button>
           <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
         </div>
-      $2
+      
       <input id="tagInput" type="text" placeholder="Enter tag and press enter" onkeydown="handleTagInput(event)" style="width: 100%; padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px;" />
       <textarea id="tradeNotes" rows="6" placeholder="SPX 6100/6150/6200 OTM butterfly, 7 DTE, IV: 16%..."></textarea>
       <button onclick="saveTradeNote()">Save Note</button>
