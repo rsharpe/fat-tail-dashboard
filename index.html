@@ -34,7 +34,7 @@
       try {
         await addDoc(collection(db, "tradeNotes"), {
           note: note,
-          tags: document.getElementById('tags').value.split(',').map(t => t.trim()),
+          tags: Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent),
           timestamp: new Date().toISOString()
         });
 
@@ -42,7 +42,7 @@
         const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
         document.getElementById('tradeHistory').innerHTML += entry;
         document.getElementById('tradeNotes').value = '';
-        document.getElementById('tags').value = '';
+        document.getElementById('tagInputContainer').innerHTML = ''; document.getElementById('tagInput').value = '';
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -96,6 +96,22 @@ Tags: ${(n.tags || []).join(', ')}
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+};
+window.handleTagInput = function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    const input = event.target;
+    const tagText = input.value.trim();
+    if (tagText !== '') {
+      const pill = document.createElement('span');
+      pill.textContent = tagText;
+      pill.className = 'tag';
+      pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;';
+      pill.onclick = () => pill.remove();
+      document.getElementById('tagInputContainer').appendChild(pill);
+      input.value = '';
+    }
+  }
 };
 </script>
   <style>
@@ -210,7 +226,8 @@ a:hover {
     <div class="card">
       <h2>Manual Trade Journal</h2>
       <label for="tradeNotes">Trade Notes:</label>
-      <textarea id="tags" rows="1" placeholder="Enter tags (comma separated)"></textarea>
+      <div id="tagInputContainer" style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 0.5rem;"></div>
+      <input id="tagInput" type="text" placeholder="Enter tag and press enter" onkeydown="handleTagInput(event)" style="width: 100%; padding: 0.3rem; border: 1px solid #ccc; border-radius: 4px;" />
       <textarea id="tradeNotes" rows="6" placeholder="SPX 6100/6150/6200 OTM butterfly, 7 DTE, IV: 16%..."></textarea>
       <button onclick="saveTradeNote()">Save Note</button>
       <div id="tradeHistory"></div>
