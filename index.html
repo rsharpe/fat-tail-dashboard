@@ -160,7 +160,7 @@
   </style>
 </head>
 <body>
-  <h1 style="color: #ff2ebc; font-weight: 100; letter-spacing: -2px; font-size: 1.25rem; text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);">Fat Tail Trading Terminal</h1>
+  <h1 style="color: #cc2485; font-weight: 100; letter-spacing: -2px; font-size: 1.25rem; text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);">Fat Tail Trading Terminal</h1>
   <div class="container">
 
     <div class="card">
@@ -277,9 +277,9 @@ window.filterTradeNotes = function () {
   const notes = window._firebaseNotes || [];
   if (!notes.length) return alert("No notes loaded to export.");
 
-  const csvHeader = "Timestamp,Note
+  const csvHeader = "Timestamp,Note,Tags
 ";
-  const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}"`).join("
+  const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}","${(n.tags || []).join(';')}"`).join("
 ");
   const csvContent = csvHeader + csvRows;
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
