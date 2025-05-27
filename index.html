@@ -37,9 +37,48 @@
       border: 1px solid #134d4a;
     }
   </style>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js">function login() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then(result => {
+    const user = result.user;
+    document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline';
+    document.getElementById('proTools').style.display = 'block';
+  });
+}
+
+function logout() {
+  firebase.auth().signOut().then(() => {
+    document.getElementById('userEmail').textContent = '';
+    document.getElementById('loginBtn').style.display = 'inline';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('proTools').style.display = 'none';
+  });
+}
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'inline';
+    document.getElementById('proTools').style.display = 'block';
+  } else {
+    document.getElementById('userEmail').textContent = '';
+    document.getElementById('loginBtn').style.display = 'inline';
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('proTools').style.display = 'none';
+  }
+});
+</script>
 </head>
 <body>
   <div class="container">
+    <div style="text-align:right; margin-bottom: 0.5rem;">
+      <button id="loginBtn" onclick="login()">Login with Google</button>
+      <button id="logoutBtn" onclick="logout()" style="display:none">Logout</button>
+      <span id="userEmail" style="margin-left: 0.5rem;"></span>
+    </div>
     <h1>Fat Tail Trading Terminal</h1>
 
     <div class="card">
@@ -96,6 +135,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+const auth = firebase.auth();
 
     window.saveTradeNote = async function () {
       const note = document.getElementById('tradeNotes').value;
