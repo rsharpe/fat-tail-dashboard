@@ -34,6 +34,7 @@
       try {
         await addDoc(collection(db, "tradeNotes"), {
           note: note,
+          tags: document.getElementById('tags').value.split(',').map(t => t.trim()),
           timestamp: new Date().toISOString()
         });
 
@@ -41,6 +42,7 @@
         const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
         document.getElementById('tradeHistory').innerHTML += entry;
         document.getElementById('tradeNotes').value = '';
+        document.getElementById('tags').value = '';
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -178,6 +180,7 @@
     <div class="card">
       <h2>Manual Trade Journal</h2>
       <label for="tradeNotes">Trade Notes:</label>
+      <textarea id="tags" rows="1" placeholder="Enter tags (comma separated)"></textarea>
       <textarea id="tradeNotes" rows="6" placeholder="SPX 6100/6150/6200 OTM butterfly, 7 DTE, IV: 16%..."></textarea>
       <button onclick="saveTradeNote()">Save Note</button>
       <div id="tradeHistory"></div>
@@ -256,7 +259,8 @@
         const time = new Date(data.timestamp).toLocaleString();
         const entry = {
           time,
-          note: data.note
+          note: data.note,
+          tags: data.tags || []
         };
         window._firebaseNotes.push(entry);
       });
@@ -269,7 +273,7 @@ window.filterTradeNotes = function () {
     container.innerHTML = '';
     (window._firebaseNotes || []).forEach(entry => {
       if (entry.note.toLowerCase().includes(searchValue)) {
-        container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}</p>`;
+        container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}<br><em>Tags: ${entry.tags.join(', ')}</em></p>`;
       }
     });
   }
