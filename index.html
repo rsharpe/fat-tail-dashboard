@@ -6,48 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fat Tail Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto Mono', monospace;
-      background-color: #227a74;
-      color: #ff6f61;
-      margin: 0;
-      padding: 1rem;
-    }
-    h1 {
-      color: #ff6f61;
-      letter-spacing: -0.5px;
-      font-size: 1.3rem;
-    }
-    label {
-      color: #ff6f61;
-      font-size: 0.715rem;
-    }
-    input, textarea {
-      font-family: 'Roboto Mono', monospace;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .card {
-      background: #1f4046;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0.5rem;
-      border: 1px solid #134d4a;
-    }
-    .tag-pill {
-      display: inline-block;
-      background-color: #ff6f61;
-      color: white;
-      border-radius: 20px;
-      padding: 0.25rem 0.75rem;
-      margin: 0.25rem;
-      font-size: 0.75rem;
+  <style>$1
+    .tag-pill.asset { background-color: #6fb3b8; }
+    .tag-pill.strategy { background-color: #f39c12; }
+    .tag-pill.direction { background-color: #3498db; }
+    .tag-pill.dte { background-color: #9b59b6; }
+    .tag-pill.greeks { background-color: #2ecc71; }
+    .tag-pill.sdzone { background-color: #e74c3c; }
+    .tag-pill.campaign { background-color: #95a5a6; }
+    .collapsible-section button { margin: 0.2rem; }
+    .collapsible-section summary {
       cursor: pointer;
+      font-weight: bold;
+      color: #ffffff;
     }
-  </style>
+    .collapsible-section {
+      margin-bottom: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #2e6d73;
+      border-radius: 5px;
+      background: #295e65;
+    }
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -67,15 +46,92 @@
       <input type="text" id="tagInput" placeholder="Enter tag and press enter" onkeydown="handleTagInput(event)" />
       <div id="tagInputContainer"></div>
       <div id="tagSuggestions" style="margin-top: 0.5rem;">
-        <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
-        <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
-        <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
-        <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
-        <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
-        <button type="button" onclick="addSuggestedTag('credit')">credit</button>
-        <button type="button" onclick="addSuggestedTag('debit')">debit</button>
-        <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
-      </div>
+  <details class="collapsible-section" open><summary>Asset/Instrument</summary>
+    <button onclick="addSuggestedTag('SPX', 'asset')">SPX</button>
+    <button onclick="addSuggestedTag('NDX', 'asset')">NDX</button>
+  </details>
+  <details class="collapsible-section"><summary>Strategy Type</summary>
+    <button onclick="addSuggestedTag('butterfly', 'strategy')">butterfly</button>
+    <button onclick="addSuggestedTag('CALL', 'strategy')">CALL</button>
+    <button onclick="addSuggestedTag('PUT', 'strategy')">PUT</button>
+    <button onclick="addSuggestedTag('credit', 'strategy')">credit</button>
+    <button onclick="addSuggestedTag('debit', 'strategy')">debit</button>
+  </details>
+  <details class="collapsible-section"><summary>Direction</summary>
+    <button onclick="addSuggestedTag('Long', 'direction')">Long</button>
+    <button onclick="addSuggestedTag('Short', 'direction')">Short</button>
+  </details>
+  <details class="collapsible-section"><summary>DTE (Days to Expiration)</summary>
+    <button onclick="addSuggestedTag('0DTE', 'dte')">0DTE</button>
+    <button onclick="addSuggestedTag('3DTE', 'dte')">3DTE</button>
+    <button onclick="addSuggestedTag('5DTE', 'dte')">5DTE</button>
+    <button onclick="addSuggestedTag('7DTE', 'dte')">7DTE</button>
+    <button onclick="addSuggestedTag('9DTE', 'dte')">9DTE</button>
+    <button onclick="addSuggestedTag('10DTE', 'dte')">10DTE</button>
+    <button onclick="addSuggestedTag('14DTE', 'dte')">14DTE</button>
+    <button onclick="addSuggestedTag('21DTE', 'dte')">21DTE</button>
+    <button onclick="addSuggestedTag('30DTE', 'dte')">30DTE</button>
+    <button onclick="addSuggestedTag('45DTE', 'dte')">45DTE</button>
+    <button onclick="addSuggestedTag('60DTE', 'dte')">60DTE</button>
+  </details>
+  <details class="collapsible-section"><summary>Volatility & Greeks</summary>
+    <button onclick="addSuggestedTag('IV', 'greeks')">IV</button>
+    <button onclick="addSuggestedTag('DELTA', 'greeks')">DELTA</button>
+    <button onclick="addSuggestedTag('GAMMA', 'greeks')">GAMMA</button>
+    <button onclick="addSuggestedTag('THETA', 'greeks')">THETA</button>
+    <button onclick="addSuggestedTag('VEGA', 'greeks')">VEGA</button>
+  </details>
+  <details class="collapsible-section"><summary>Standard Deviation Zones</summary>
+    <button onclick="addSuggestedTag('1-2σ', 'sdzone')">1-2σ</button>
+    <button onclick="addSuggestedTag('1-3σ', 'sdzone')">1-3σ</button>
+    <button onclick="addSuggestedTag('2-3σ', 'sdzone')">2-3σ</button>
+    <button onclick="addSuggestedTag('3-5σ', 'sdzone')">3-5σ</button>
+  </details>
+  <details class="collapsible-section"><summary>Campaigns/Labels</summary>
+    <button onclick="addSuggestedTag('campaign1', 'campaign')">campaign1</button>
+  </details>
+</div>
+  <div><strong>Strategy Type:</strong><br>
+    <button onclick="addSuggestedTag('butterfly')">butterfly</button>
+    <button onclick="addSuggestedTag('CALL')">CALL</button>
+    <button onclick="addSuggestedTag('PUT')">PUT</button>
+    <button onclick="addSuggestedTag('credit')">credit</button>
+    <button onclick="addSuggestedTag('debit')">debit</button>
+  </div>
+  <div><strong>Direction:</strong><br>
+    <button onclick="addSuggestedTag('Long')">Long</button>
+    <button onclick="addSuggestedTag('Short')">Short</button>
+  </div>
+  <div><strong>DTE (Days to Expiration):</strong><br>
+    <button onclick="addSuggestedTag('0DTE')">0DTE</button>
+    <button onclick="addSuggestedTag('3DTE')">3DTE</button>
+    <button onclick="addSuggestedTag('5DTE')">5DTE</button>
+    <button onclick="addSuggestedTag('7DTE')">7DTE</button>
+    <button onclick="addSuggestedTag('9DTE')">9DTE</button>
+    <button onclick="addSuggestedTag('10DTE')">10DTE</button>
+    <button onclick="addSuggestedTag('14DTE')">14DTE</button>
+    <button onclick="addSuggestedTag('21DTE')">21DTE</button>
+    <button onclick="addSuggestedTag('30DTE')">30DTE</button>
+    <button onclick="addSuggestedTag('45DTE')">45DTE</button>
+    <button onclick="addSuggestedTag('60DTE')">60DTE</button>
+  </div>
+  <div><strong>Volatility & Greeks:</strong><br>
+    <button onclick="addSuggestedTag('IV')">IV</button>
+    <button onclick="addSuggestedTag('DELTA')">DELTA</button>
+    <button onclick="addSuggestedTag('GAMMA')">GAMMA</button>
+    <button onclick="addSuggestedTag('THETA')">THETA</button>
+    <button onclick="addSuggestedTag('VEGA')">VEGA</button>
+  </div>
+  <div><strong>Standard Deviation Zones:</strong><br>
+    <button onclick="addSuggestedTag('1-2σ')">1-2σ</button>
+    <button onclick="addSuggestedTag('1-3σ')">1-3σ</button>
+    <button onclick="addSuggestedTag('2-3σ')">2-3σ</button>
+    <button onclick="addSuggestedTag('3-5σ')">3-5σ</button>
+  </div>
+  <div><strong>Campaigns/Labels:</strong><br>
+    <button onclick="addSuggestedTag('campaign1')">campaign1</button>
+  </div>
+</div>
 
       <button onclick="saveTradeNote()">Save Note</button>
       <div id="tradeHistory"></div>
@@ -126,13 +182,13 @@
       }
     }
 
-    function addSuggestedTag(tag) {
-      const pill = document.createElement('span');
-      pill.className = 'tag-pill';
-      pill.textContent = tag;
-      pill.onclick = () => pill.remove();
-      document.getElementById('tagInputContainer').appendChild(pill);
-    }
+    function addSuggestedTag(tag, group = '') {
+  const pill = document.createElement('span');
+  pill.className = 'tag-pill ' + group;
+  pill.textContent = tag;
+  pill.onclick = () => pill.remove();
+  document.getElementById('tagInputContainer').appendChild(pill);
+}
   </script>
 </body>
 <footer style="text-align:center; color:#1f4046; font-size:0.85rem; padding-top:1rem;">
