@@ -1,33 +1,118 @@
-window.displayAnalytics = function () {
-  const panel = document.getElementById("analyticsPanel");
-  const notes = window._firebaseNotes || [];
-  const tagStats = {};
+<!-- Updated Fat Tail Dashboard with Analytics Fix -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Head content unchanged -->
+</head>
+<body>
+  <!-- Body content unchanged -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  notes.forEach(note => {
-    const noteText = note.note || "";
-    const match = noteText.match(/P\/?L\s*[:=]?\s*[-+]?\$?-?\d+(\.\d+)?/i);
-    let pnlValue = 0;
-    if (match) {
-      const num = match[0].match(/-?\d+(\.\d+)?/);
-      if (num) pnlValue = parseFloat(num[0]);
+    const firebaseConfig = {
+      apiKey: "AIza...",
+      authDomain: "fattailjournal.firebaseapp.com",
+      projectId: "fattailjournal",
+      storageBucket: "fattailjournal.appspot.com",
+      messagingSenderId: "...",
+      appId: "1:...:web:..."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.saveTradeNote = async function () {
+      const note = document.getElementById('tradeNotes').value;
+      const tags = Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent);
+      if (!note) return;
+
+      try {
+        await addDoc(collection(db, "tradeNotes"), {
+          note: note,
+          tags: tags,
+          timestamp: new Date().toISOString()
+        });
+
+        const timestamp = new Date().toLocaleString();
+        const entry = `<p><strong>${timestamp}</strong>: ${note}</p>`;
+        document.getElementById('tradeHistory').innerHTML += entry;
+        document.getElementById('tradeNotes').value = '';
+        document.getElementById('tagInputContainer').innerHTML = '';
+        document.getElementById('tagInput').value = '';
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
     }
 
-    (note.tags || []).forEach(tag => {
-      if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
-      tagStats[tag].count++;
-      tagStats[tag].pnl += pnlValue;
-    });
-  });
+    window.loadTradeNotes = async function () {
+      const notesRef = collection(db, "tradeNotes");
+      const q = query(notesRef, orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+      window._firebaseNotes = [];
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const time = new Date(data.timestamp).toLocaleString();
+        const entry = {
+          time,
+          note: data.note,
+          tags: data.tags || []
+        };
+        window._firebaseNotes.push(entry);
+      });
+      filterTradeNotes();
+      if (document.getElementById('proTools').style.display === 'block') displayAnalytics();
+    };
 
-  const chartData = Object.entries(tagStats).map(([tag, data]) => {
-    return `<div style='margin-bottom:0.25rem;'>
-      <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl.toFixed(2)}
-      <div style='height: 8px; background:#ccc; width:100%;'>
-        <div style='height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;'></div>
-      </div>
-    </div>`;
-  }).join('');
+    window.displayAnalytics = function () {
+      const panel = document.getElementById("analyticsPanel");
+      const notes = window._firebaseNotes || [];
+      const tagStats = {};
 
-  panel.innerHTML = Object.keys(tagStats).length ? chartData :
-    '<p>No tag data available. Save some tagged trades to see analytics.</p>';
-};
+      notes.forEach(note => {
+        const noteText = note.note || "";
+        const match = noteText.match(/P\/?L\s*[:=]?\s*[-+]?\$?-?\d+(\.\d+)?/i);
+        let pnlValue = 0;
+        if (match) {
+          const num = match[0].match(/-?\d+(\.\d+)?/);
+          if (num) pnlValue = parseFloat(num[0]);
+        }
+
+        (note.tags || []).forEach(tag => {
+          if (!tagStats[tag]) tagStats[tag] = { count: 0, pnl: 0 };
+          tagStats[tag].count++;
+          tagStats[tag].pnl += pnlValue;
+        });
+      });
+
+      const chartData = Object.entries(tagStats).map(([tag, data]) => {
+        return `<div style='margin-bottom:0.25rem;'>
+          <strong>${tag}</strong>: ${data.count} trades | P/L: $${data.pnl.toFixed(2)}
+          <div style='height: 8px; background:#ccc; width:100%;'>
+            <div style='height:8px; background:#227a74; width:${Math.min(data.count * 20, 100)}%;'></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      panel.innerHTML = Object.keys(tagStats).length ? chartData :
+        '<p>No tag data available. Save some tagged trades to see analytics.</p>';
+    };
+
+    window.filterTradeNotes = function () {
+      const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+      const tagValue = document.getElementById("tagFilter").value.toLowerCase();
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+      (window._firebaseNotes || []).forEach(entry => {
+        const matchesNote = entry.note.toLowerCase().includes(searchValue);
+        const matchesTag = tagValue ? entry.tags.some(tag => tag.toLowerCase().includes(tagValue)) : true;
+        if (matchesNote && matchesTag) {
+          container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}<br><em>Tags: ${entry.tags.join(', ')}</em></p>`;
+        }
+      });
+    };
+  </script>
+</body>
+</html>
