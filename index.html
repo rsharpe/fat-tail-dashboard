@@ -1,4 +1,3 @@
-<!-- Restored tag button panel for journaling precision + Firebase Fixes -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +25,7 @@
       const note = document.getElementById('tradeNotes').value;
       if (!note) return;
 
-      const tags = Array.from(document.querySelectorAll('.tag-pill')).map(el => el.textContent);
+      const tags = Array.from(document.querySelectorAll('.tag-pill.selected')).map(el => el.textContent);
       try {
         await addDoc(collection(db, "tradeNotes"), {
           note: note,
@@ -38,7 +37,7 @@
         const entry = `<p><strong>${timestamp}</strong>: ${note} <br/><em>Tags:</em> ${tags.join(', ')}</p>`;
         document.getElementById('tradeHistory').innerHTML += entry;
         document.getElementById('tradeNotes').value = '';
-        document.getElementById('tagInputContainer').innerHTML = '';
+        document.querySelectorAll('.tag-pill').forEach(p => p.classList.remove('selected'));
       } catch (e) {
         console.error("Error adding document: ", e);
       }
@@ -94,8 +93,67 @@
       });
     }
   </script>
+  <style>
+    body {
+      font-family: 'Roboto Mono', monospace;
+      background-color: #d1eef2;
+      color: #1f4046;
+      padding: 20px;
+    }
+    textarea, input {
+      width: 100%;
+      margin: 0.5rem 0;
+    }
+    .tag-pill {
+      display: inline-block;
+      background: #ccf;
+      color: #333;
+      padding: 4px 10px;
+      margin: 2px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tag-pill.selected {
+      background-color: #007f8c;
+      color: #fff;
+    }
+    button {
+      margin: 0.5rem 0;
+    }
+  </style>
 </head>
 <body>
-<!-- your body content stays the same, already in canvas -->
+  <h1 style="color: #ff9933; font-size: 1.6rem">Fat Tail Trading Terminal</h1>
+  <textarea id="tradeNotes" rows="5" placeholder="Enter trade note..."></textarea>
+  <div id="tagInputContainer"></div>
+  <div>
+    <button onclick="saveTradeNote()">Save Note</button>
+    <button onclick="loadTradeNotes()">Load Saved Notes</button>
+    <button onclick="exportToPDF()">Export to PDF</button>
+  </div>
+  <div>
+    <label>Search Notes:</label>
+    <input type="text" id="searchFilter" oninput="filterTradeNotes()" placeholder="Search note contents...">
+    <label>Tag Filter:</label>
+    <input type="text" id="tagFilter" oninput="filterTradeNotes()" placeholder="Search by tag...">
+  </div>
+  <div id="tradeHistory"></div>
+  <div id="remoteHistory"></div>
+  <script>
+    const defaultTags = [
+      "SPX", "0DTE", "3DTE", "5DTE", "7DTE", "10DTE", "14DTE", "21DTE", "30DTE", "60DTE",
+      "CALL", "PUT", "Long", "Short", "IV", "DELTA", "GAMMA", "THETA", "VEGA",
+      "1-2σ", "2-3σ", "3-5σ", "campaign1"
+    ];
+    const tagInput = document.getElementById('tagInputContainer');
+    defaultTags.forEach(tag => {
+      const pill = document.createElement('span');
+      pill.className = 'tag-pill';
+      pill.textContent = tag;
+      pill.onclick = () => pill.classList.toggle('selected');
+      tagInput.appendChild(pill);
+    });
+  </script>
 </body>
 </html>
