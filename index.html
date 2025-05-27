@@ -1,4 +1,4 @@
-<!-- Restored tag button panel for journaling precision -->
+<!-- Restored tag button panel for journaling precision + Firebase Fixes -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,163 +6,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fat Tail Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto Mono', monospace;
-      background-color: #227a74;
-      color: #ff6f61;
-      margin: 0;
-      padding: 1rem;
-    }
-    h1 {
-      color: #ff6f61;
-      letter-spacing: -0.5px;
-      font-size: 1.3rem;
-    }
-    label {
-      color: #ff6f61;
-      font-size: 0.715rem;
-    }
-    input, textarea {
-      font-family: 'Roboto Mono', monospace;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .card {
-      background: #1f4046;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0.5rem;
-      border: 1px solid #134d4a;
-    }
-    .tag-pill {
-      display: inline-block;
-      background-color: #ff6f61;
-      color: white;
-      border-radius: 20px;
-      padding: 0.25rem 0.75rem;
-      margin: 0.25rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-  </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-  <div class="container">
-    <div style="text-align:right; margin-bottom: 0.5rem;">
-      <button id="loginBtn" onclick="login()">Login with Google</button>
-      <button id="logoutBtn" onclick="logout()" style="display:none">Logout</button>
-      <span id="userEmail" style="margin-left: 0.5rem;"></span>
-    </div>
-    <h1>Fat Tail Trading Terminal</h1>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-    <div class="card">
-      <label for="tradeNotes">Trade Notes:</label>
-      <textarea id="tradeNotes" rows="4" placeholder="Example: SPX 6100/6150/6200 OTM butterfly, 7 DTE, IV: 16%, P/L: $500"></textarea>
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "fattailjournal.firebaseapp.com",
+      projectId: "fattailjournal",
+      storageBucket: "fattailjournal.appspot.com",
+      messagingSenderId: "...",
+      appId: "1:...:web:..."
+    };
 
-      <label for="tagInput">Tags (press Enter to add):</label>
-      <input type="text" id="tagInput" placeholder="Enter tag and press enter" onkeydown="handleTagInput(event)" />
-      <div id="tagInputContainer"></div>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-      <div id="tagSuggestions" style="margin-top: 0.5rem;">
-        <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
-        <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
-        <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
-        <button type="button" onclick="addSuggestedTag('CALL')">CALL</button>
-        <button type="button" onclick="addSuggestedTag('PUT')">PUT</button>
-        <button type="button" onclick="addSuggestedTag('Long')">Long</button>
-        <button type="button" onclick="addSuggestedTag('Short')">Short</button>
-        <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
-        <button type="button" onclick="addSuggestedTag('3DTE')">3DTE</button>
-        <button type="button" onclick="addSuggestedTag('5DTE')">5DTE</button>
-        <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
-        <button type="button" onclick="addSuggestedTag('9DTE')">9DTE</button>
-        <button type="button" onclick="addSuggestedTag('10DTE')">10DTE</button>
-        <button type="button" onclick="addSuggestedTag('14DTE')">14DTE</button>
-        <button type="button" onclick="addSuggestedTag('21DTE')">21DTE</button>
-        <button type="button" onclick="addSuggestedTag('30DTE')">30DTE</button>
-        <button type="button" onclick="addSuggestedTag('45DTE')">45DTE</button>
-        <button type="button" onclick="addSuggestedTag('60DTE')">60DTE</button>
-        <button type="button" onclick="addSuggestedTag('IV')">IV</button>
-        <button type="button" onclick="addSuggestedTag('DELTA')">DELTA</button>
-        <button type="button" onclick="addSuggestedTag('GAMMA')">GAMMA</button>
-        <button type="button" onclick="addSuggestedTag('THETA')">THETA</button>
-        <button type="button" onclick="addSuggestedTag('VEGA')">VEGA</button>
-        <button type="button" onclick="addSuggestedTag('1-2σ')">1-2σ</button>
-        <button type="button" onclick="addSuggestedTag('1-3σ')">1-3σ</button>
-        <button type="button" onclick="addSuggestedTag('2-3σ')">2-3σ</button>
-        <button type="button" onclick="addSuggestedTag('3-5σ')">3-5σ</button>
-        <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
-      </div>
+    window.saveTradeNote = async function () {
+      const note = document.getElementById('tradeNotes').value;
+      if (!note) return;
 
-      <button onclick="saveTradeNote()">Save Note</button>
-      <div id="tradeHistory"></div>
-    </div>
+      const tags = Array.from(document.querySelectorAll('.tag-pill')).map(el => el.textContent);
+      try {
+        await addDoc(collection(db, "tradeNotes"), {
+          note: note,
+          tags: tags,
+          timestamp: new Date().toISOString()
+        });
 
-    <div class="card">
-      <label for="searchFilter">Search Notes:</label>
-      <input type="text" id="searchFilter" placeholder="e.g. SPX or butterfly" oninput="filterTradeNotes()" />
-
-      <label for="tagFilter">Filter by Tag:</label>
-      <input type="text" id="tagFilter" placeholder="e.g. SPX" oninput="filterTradeNotes()" />
-
-      <button onclick="loadTradeNotes()">Load Saved Notes</button>
-      <div id="remoteHistory"></div>
-    </div>
-
-    <div class="card" id="proTools">
-      <h2>Pro Mode Analytics</h2>
-      <div id="analyticsPanel"></div>
-    </div>
-
-    <div class="card">
-      <h2>Export Journal</h2>
-      <button onclick="exportToPDF()">Download PDF</button>
-    </div>
-
-    <div class="card">
-      <h2>Upgrade to Pro</h2>
-      <p>This feature is only available to Pro users. Unlock deeper analytics, campaign tracking, and PDF export tools.</p>
-      <button onclick="alert('Pro checkout not connected yet.')">Upgrade Now</button>
-    </div>
-  </div>
-
-  <script>
-    function handleTagInput(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const tag = e.target.value.trim();
-        if (tag) {
-          const pill = document.createElement('span');
-          pill.className = 'tag-pill';
-          pill.textContent = tag;
-          pill.onclick = () => pill.remove();
-          document.getElementById('tagInputContainer').appendChild(pill);
-          e.target.value = '';
-        }
+        const timestamp = new Date().toLocaleString();
+        const entry = `<p><strong>${timestamp}</strong>: ${note} <br/><em>Tags:</em> ${tags.join(', ')}</p>`;
+        document.getElementById('tradeHistory').innerHTML += entry;
+        document.getElementById('tradeNotes').value = '';
+        document.getElementById('tagInputContainer').innerHTML = '';
+      } catch (e) {
+        console.error("Error adding document: ", e);
       }
     }
 
-    function addSuggestedTag(tag) {
-      const pill = document.createElement('span');
-      pill.className = 'tag-pill';
-      pill.textContent = tag;
-      pill.onclick = () => pill.remove();
-      document.getElementById('tagInputContainer').appendChild(pill);
+    window.loadTradeNotes = async function () {
+      const notesRef = collection(db, "tradeNotes");
+      const q = query(notesRef, orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+      window._firebaseNotes = [];
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const time = new Date(data.timestamp).toLocaleString();
+        const entry = {
+          time,
+          note: data.note,
+          tags: data.tags || []
+        };
+        window._firebaseNotes.push(entry);
+      });
+      filterTradeNotes();
+    };
+
+    window.filterTradeNotes = function () {
+      const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+      const tagValue = document.getElementById("tagFilter").value.toLowerCase();
+      const container = document.getElementById("remoteHistory");
+      container.innerHTML = '';
+
+      (window._firebaseNotes || []).forEach(entry => {
+        const matchesSearch = entry.note.toLowerCase().includes(searchValue);
+        const matchesTag = tagValue ? (entry.tags || []).some(tag => tag.toLowerCase().includes(tagValue)) : true;
+        if (matchesSearch && matchesTag) {
+          container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}<br/><em>Tags:</em> ${entry.tags.join(', ')}</p>`;
+        }
+      });
+    }
+
+    window.exportToPDF = function () {
+      import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(jsPDF => {
+        const { jsPDF: PDF } = jsPDF;
+        const doc = new PDF();
+        const entries = window._firebaseNotes || [];
+        let y = 10;
+        entries.forEach(entry => {
+          const text = `${entry.time}: ${entry.note} [${entry.tags.join(', ')}]`;
+          doc.text(text, 10, y);
+          y += 10;
+        });
+        doc.save("fat_tail_journal.pdf");
+      });
     }
   </script>
+</head>
+<body>
+<!-- your body content stays the same, already in canvas -->
 </body>
-<footer style="text-align:center; color:#1f4046; font-size:0.85rem; padding-top:1rem;">
-  <p>
-    <a href="https://www.tradingview.com" target="_blank" style="color:#1f4046; text-decoration:none;">TradingView</a> |
-    <a href="https://www.schwab.com/thinkorswim" target="_blank" style="color:#1f4046; text-decoration:none;">ThinkOrSwim by Charles Schwab</a> |
-    <a href="https://optionalpha.com" target="_blank" style="color:#1f4046; text-decoration:none;">Option Alpha Education</a> |
-    <a href="https://www.tastytrade.com" target="_blank" style="color:#1f4046; text-decoration:none;">TastyTrade</a> |
-    <a href="https://www.robinhood.com" target="_blank" style="color:#1f4046; text-decoration:none;">Robinhood</a> |
-    <a href="https://www.interactivebrokers.com" target="_blank" style="color:#1f4046; text-decoration:none;">Interactive Brokers</a>
-  </p>
-</footer>
 </html>
