@@ -113,6 +113,10 @@
       border-radius: 20px;
       cursor: pointer;
       user-select: none;
+      transition: all 0.2s ease;
+    }
+    .tag-pill:hover {
+      background: #99ddee;
     }
     .tag-pill.selected {
       background-color: #007f8c;
@@ -135,11 +139,12 @@
     }
     footer a:hover {
       text-decoration: underline;
+      color: #007f8c;
     }
   </style>
 </head>
 <body>
-  <h1 style="color: #ff9933; font-size: 1.6rem">Fat Tail Trading Terminal</h1>
+  <h1 style="color: #cc2485; font-size: 1.5rem; letter-spacing: -1px">Fat Tail Trading Terminal</h1>
   <textarea id="tradeNotes" rows="5" placeholder="Enter trade note..."></textarea>
   <div id="tagInputContainer"></div>
   <div>
