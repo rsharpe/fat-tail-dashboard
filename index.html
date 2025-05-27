@@ -48,7 +48,7 @@
 
       <label for="tagInput">Tags (press Enter to add):</label>
       <input type="text" id="tagInput" placeholder="Enter tag and press enter" />
-      $1
+      <div id="tagInputContainer"></div>
 <div id="tagSuggestions" style="margin-top: 0.5rem;">
   <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
   <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
@@ -216,5 +216,15 @@ window.addSuggestedTag = function(tagText) {
   }
 };
 </script>
+<footer style="text-align:center; color:#1f4046; font-size:0.85rem; padding-top:1rem;">
+  <p>
+    <a href="https://www.tradingview.com" target="_blank" style="color:#1f4046; text-decoration:none;">TradingView</a> |
+    <a href="https://www.schwab.com/thinkorswim" target="_blank" style="color:#1f4046; text-decoration:none;">ThinkOrSwim by Charles Schwab</a> |
+    <a href="https://optionalpha.com" target="_blank" style="color:#1f4046; text-decoration:none;">Option Alpha Education</a> |
+    <a href="https://www.tastytrade.com" target="_blank" style="color:#1f4046; text-decoration:none;">TastyTrade</a> |
+    <a href="https://www.robinhood.com" target="_blank" style="color:#1f4046; text-decoration:none;">Robinhood</a> |
+    <a href="https://www.interactivebrokers.com" target="_blank" style="color:#1f4046; text-decoration:none;">Interactive Brokers</a>
+  </p>
+</footer>
 </body>
 </html>
