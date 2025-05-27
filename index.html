@@ -70,7 +70,14 @@ firebase.auth().onAuthStateChanged(user => {
     document.getElementById('proTools').style.display = 'none';
   }
 });
+function exportToPDF() {
+  const doc = new window.jspdf.jsPDF();
+  const history = document.getElementById("remoteHistory").innerText;
+  doc.text(history, 10, 10);
+  doc.save("FatTail_TradeJournal.pdf");
+}
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -117,6 +124,16 @@ firebase.auth().onAuthStateChanged(user => {
     <div class="card" id="proTools">
       <h2>Pro Mode Analytics</h2>
       <div id="analyticsPanel"></div>
+
+    <div class="card">
+      <h2>Export Journal</h2>
+      <button onclick="exportToPDF()">Download PDF</button>
+    </div>
+
+    <div class="card">
+      <h2>Upgrade to Pro</h2>
+      <p>This feature is only available to Pro users. Unlock deeper analytics, campaign tracking, and PDF export tools.</p>
+      <button onclick="alert('Pro checkout not connected yet.')">Upgrade Now</button>
     </div>
   </div>
 
