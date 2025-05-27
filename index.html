@@ -78,6 +78,25 @@
       }
     });
 
+window.exportNotesToPDF = function () {
+  const notes = window._firebaseNotes || [];
+  if (!notes.length) return alert("No notes loaded to export.");
+
+  const content = notes.map(n => `${n.time}
+${n.note}
+Tags: ${(n.tags || []).join(', ')}
+
+`).join('');
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "fat_tail_journal.txt");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 </script>
   <style>
     body {
@@ -196,6 +215,9 @@
 
     <div class="card full-width">
       <h2>Journal Log History (Live from Firebase)</h2>
+      <button onclick="exportNotesToPDF()">Export to PDF</button>
+      <label for="tagFilter">Filter by Tag:</label>
+      <input type="text" id="tagFilter" placeholder="e.g., SPX, butterfly" oninput="filterTradeNotes()" />
       <button onclick="exportNotesToCSV()">Export to CSV</button><br/><br/>
       <label for="searchFilter">Search notes:</label>
       <input type="text" id="searchFilter" placeholder="e.g., SPX, butterfly, IV" oninput="filterTradeNotes()" />
@@ -269,33 +291,17 @@
 
 window.filterTradeNotes = function () {
     const searchValue = document.getElementById("searchFilter").value.toLowerCase();
+    const tagValue = document.getElementById("tagFilter").value.toLowerCase();
     const container = document.getElementById("remoteHistory");
     container.innerHTML = '';
     (window._firebaseNotes || []).forEach(entry => {
-      if (entry.note.toLowerCase().includes(searchValue)) {
+      const matchesNote = entry.note.toLowerCase().includes(searchValue);
+      const matchesTag = tagValue ? entry.tags.some(tag => tag.toLowerCase().includes(tagValue)) : true;
+      if (matchesNote && matchesTag) {
         container.innerHTML += `<p><strong>${entry.time}</strong>: ${entry.note}<br><em>Tags: ${entry.tags.join(', ')}</em></p>`;
       }
     });
-  }
-  window.exportNotesToCSV = function () {
-  const notes = window._firebaseNotes || [];
-  if (!notes.length) return alert("No notes loaded to export.");
-
-  const csvHeader = "Timestamp,Note,Tags
-";
-  const csvRows = notes.map(n => `"${n.time.replace(/"/g, '""')}","${n.note.replace(/"/g, '""')}","${(n.tags || []).join(';')}"`).join("
-");
-  const csvContent = csvHeader + csvRows;
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "fat_tail_journal.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+  };
 </script>
 <footer style="margin-top: 3rem; text-align: center; color: #333;">
   <hr style="border-color: #00ffcc;">
