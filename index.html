@@ -48,7 +48,17 @@
 
       <label for="tagInput">Tags (press Enter to add):</label>
       <input type="text" id="tagInput" placeholder="Enter tag and press enter" />
-      <div id="tagInputContainer"></div>
+      $1
+<div id="tagSuggestions" style="margin-top: 0.5rem;">
+  <button type="button" onclick="addSuggestedTag('SPX')">SPX</button>
+  <button type="button" onclick="addSuggestedTag('NDX')">NDX</button>
+  <button type="button" onclick="addSuggestedTag('butterfly')">butterfly</button>
+  <button type="button" onclick="addSuggestedTag('0DTE')">0DTE</button>
+  <button type="button" onclick="addSuggestedTag('7DTE')">7DTE</button>
+  <button type="button" onclick="addSuggestedTag('credit')">credit</button>
+  <button type="button" onclick="addSuggestedTag('debit')">debit</button>
+  <button type="button" onclick="addSuggestedTag('campaign1')">campaign1</button>
+</div>
 
       <button onclick="saveTradeNote()">Save Note</button>
       <div id="tradeHistory"></div>
@@ -178,6 +188,33 @@
         }
       });
     };
-  </script>
+  document.getElementById('tagInput').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const tagText = e.target.value.trim();
+    if (tagText !== '') {
+      const pill = document.createElement('span');
+      pill.textContent = tagText;
+      pill.className = 'tag';
+      pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;margin:2px;cursor:pointer;';
+      pill.onclick = () => pill.remove();
+      document.getElementById('tagInputContainer').appendChild(pill);
+      e.target.value = '';
+    }
+  }
+});
+
+window.addSuggestedTag = function(tagText) {
+  const existingTags = Array.from(document.querySelectorAll('#tagInputContainer .tag')).map(tag => tag.textContent);
+  if (!existingTags.includes(tagText)) {
+    const pill = document.createElement('span');
+    pill.textContent = tagText;
+    pill.className = 'tag';
+    pill.style.cssText = 'background:#227a74;color:#fff;padding:2px 6px;border-radius:12px;font-size:0.65rem;display:inline-block;margin:2px;cursor:pointer;';
+    pill.onclick = () => pill.remove();
+    document.getElementById('tagInputContainer').appendChild(pill);
+  }
+};
+</script>
 </body>
 </html>
