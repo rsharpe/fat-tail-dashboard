@@ -11,7 +11,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Roboto Mono', monospace;
       background: #2d7d7d;
@@ -19,7 +18,6 @@
       min-height: 100vh;
       padding: 20px;
     }
-
     .header {
       color: #ff6b9d;
       font-size: 18px;
@@ -27,7 +25,6 @@
       margin-bottom: 20px;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
-
     .section {
       background: #faf8f5;
       border: 2px solid #666;
@@ -36,31 +33,25 @@
       padding: 15px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-
     
-
     .section-title {
       font-weight: 700;
       font-size: 14px;
       margin-bottom: 10px;
       color: #333;
     }
-
     .pink-title {
       color: #ff6b9d;
     }
-
     .form-row {
       margin-bottom: 8px;
     }
-
     .form-row label {
       display: inline-block;
       width: 180px;
       font-size: 12px;
       color: #333;
     }
-
     .form-row input, .form-row select {
       width: 150px;
       padding: 2px 4px;
@@ -68,11 +59,9 @@
       font-family: 'Roboto Mono', monospace;
       font-size: 12px;
     }
-
     .button-group {
       margin-top: 10px;
     }
-
     .btn {
       background: #e0e0e0;
       border: 1px solid #999;
@@ -83,21 +72,17 @@
       cursor: pointer;
       border-radius: 2px;
     }
-
     .btn:hover {
       background: #d0d0d0;
     }
-
     .btn-primary {
       background: #4a90e2;
       color: white;
       border-color: #357abd;
     }
-
     .btn-primary:hover {
       background: #357abd;
     }
-
     .textarea {
       width: 100%;
       height: 80px;
@@ -107,11 +92,9 @@
       font-size: 11px;
       resize: vertical;
     }
-
     .file-input {
       margin-top: 5px;
     }
-
     .result-area {
       margin-top: 10px;
       padding: 8px;
@@ -121,35 +104,29 @@
       min-height: 40px;
       font-size: 12px;
     }
-
     .pro-section {
       background: #f0f8ff;
     }
-
     .pro-text {
       font-size: 11px;
       color: #666;
       margin-bottom: 8px;
       font-style: italic;
     }
-
     .footer {
       margin-top: 30px;
       text-align: center;
       font-size: 10px;
       color: #333;
     }
-
     .footer a {
       color: #4a90e2;
       text-decoration: none;
       margin: 0 5px;
     }
-
     .footer a:hover {
       text-decoration: underline;
     }
-
     .status-text {
       font-size: 11px;
       color: #666;
@@ -159,7 +136,6 @@
 </head>
 <body>
   <div class="header">Fat Tail Trading Terminal</div>
-
   <!-- σ-Distance Calculator -->
   <div class="section">
     <div class="section-title pink-title">σ-Distance Calculator</div>
@@ -180,7 +156,6 @@
     </div>
     <div class="result-area" id="sigmaResults"></div>
   </div>
-
   <!-- Manual Trade Journal -->
   <div class="section">
     <div class="section-title pink-title">Manual Trade Journal</div>
@@ -207,7 +182,6 @@ butterfly, 7 DTE, IV:
       <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
     </div>
   </div>
-
   <!-- Upload ThinkOrSwim CSV Log -->
   <div class="section">
     <div class="section-title pink-title">Upload ThinkOrSwim CSV Log</div>
@@ -216,7 +190,6 @@ butterfly, 7 DTE, IV:
       <span class="status-text" id="fileStatus">No file chosen</span>
     </div>
   </div>
-
   <!-- Journal Log History -->
   <div class="section">
     <div class="section-title pink-title">Journal Log History (Live from Firebase)</div>
@@ -234,7 +207,6 @@ butterfly, 7 DTE, IV:
       <button class="btn" onclick="loadSavedNotes()">Load Saved Notes</button>
     </div>
   </div>
-
   <!-- Pro Mode Login -->
   <div class="section pro-section">
     <div class="section-title pink-title">Pro Mode Login</div>
@@ -244,7 +216,6 @@ butterfly, 7 DTE, IV:
     </div>
     <div class="status-text">Not logged in</div>
   </div>
-
   <!-- Footer -->
   <div class="footer">
     <a href="#">TradeWise Genius</a> | 
@@ -256,39 +227,32 @@ butterfly, 7 DTE, IV:
     <br>
     Pro Mode coming soon - analytics, strategy tagging, and cloud sync - <a href="#">buy cloud</a>
   </div>
-
   <script>
     // σ-Distance Calculator
     function calculateZones() {
       const spot = parseFloat(document.getElementById('spotPrice').value);
       const iv = parseFloat(document.getElementById('impliedVol').value) / 100;
       const dte = parseFloat(document.getElementById('daysToExp').value);
-
       if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
         document.getElementById('sigmaResults').innerHTML = 'Please fill in all values correctly.';
         return;
       }
-
       const sqrtT = Math.sqrt(dte / 365);
       const oneStdDev = spot * iv * sqrtT;
-
       let results = '<strong>Standard Deviation Zones:</strong><br>';
       for (let i = 1; i <= 3; i++) {
         const lower = (spot - i * oneStdDev).toFixed(2);
         const upper = (spot + i * oneStdDev).toFixed(2);
         results += `${i}σ: ${lower} - ${upper}<br>`;
       }
-
       document.getElementById('sigmaResults').innerHTML = results;
     }
-
     // Trade Journal Functions
     function addSymbol(symbol) {
       const textarea = document.getElementById('tradeNotes');
       textarea.value += symbol + ' ';
       textarea.focus();
     }
-
     function saveNote() {
       const notes = document.getElementById('tradeNotes').value;
       if (notes.trim()) {
@@ -296,28 +260,416 @@ butterfly, 7 DTE, IV:
         // In production: save to Firebase
       }
     }
-
     // File upload
     document.getElementById('csvFile').addEventListener('change', function(e) {
       const file = e.target.files[0];
       document.getElementById('fileStatus').textContent = file ? file.name : 'No file chosen';
     });
-
     // Export functions
     function exportToPDF() {
       alert('PDF export feature (Pro Mode)');
     }
-
     function exportToCSV() {
       alert('CSV export feature');
     }
-
     function loadSavedNotes() {
       const filter = document.getElementById('filterTag').value;
       const search = document.getElementById('searchNotes').value;
       alert(`Loading notes... Filter: "${filter}", Search: "${search}"`);
     }
+    // Pro Mode
+    function loginWithGoogle() {
+      alert('Google OAuth login (Pro Mode feature)');
+    }
+  </script>
+</body>
+</html>
+You can copy this complete code to update your GitHub repository. This includes all the recent styling changes with the tropical pink titles, soft cream section backgrounds, and teal page background.
 
+Prompt: make the whole document 35% smaller and supply the updated index.html code
+
+RS
+
+hesychast85
+Assistant
+1 hour ago
+I'll make the entire document 35% smaller by reducing font sizes, padding, margins, and other dimensions throughout the design.
+
+index.html
+Scale down entire document by 35%
+Please increase by 15% by increasing font sizes, padding, margins, and other dimensions throughout the design, But make the dom 30% smaler
+
+RS
+
+hesychast85
+Assistant
+10 minutes ago
+I'll increase the font sizes, padding, margins, and other dimensions by 15% while making the overall DOM container 30% smaller. This will create a more compact layout with proportionally larger text and spacing.
+
+index.html
+Checkpoint made
+Scale UI: +15% font/spacing, -30% DOM size
+13 minutes ago
+•
+Prompt: bring in all sections 40% and increase text size 40%
+
+RS
+
+hesychast85
+Assistant
+8 minutes ago
+I'll bring in all sections by 40% (reducing their width) and increase text sizes by 40% throughout the document.
+
+index.html
+Checkpoint made
+Narrowed sections 40% and increased text sizes 40%
+12 minutes ago
+•
+Prompt: I am trying to make the DOM not too big not too small. Please suggest and enhance
+
+RS
+
+hesychast85
+Assistant
+6 minutes ago
+Looking at your current DOM, I can see it's currently scaled down to 70% with sections at 60% width. Let me optimize the sizing to find a better balance - not too big, not too small.
+
+I'll adjust the overall scale to 85% (closer to normal size) and set sections to 70% width for better proportion:
+
+index.html
+This will give you a more balanced layout that's not too cramped but also not overwhelmingly large. The 85% scale provides good readability while the 70% section width maintains proper proportions on different screen sizes.
+
+Checkpoint made
+Optimize DOM sizing for better balance
+9 minutes ago
+•
+Prompt: adjust sections by increasing by 35% and increase text size 35%
+
+RS
+
+hesychast85
+Assistant
+3 minutes ago
+I'll increase the section width by 35% (from 70% to 94.5%) and increase all text sizes by 35% throughout the design.
+
+index.html
+Checkpoint made
+Increased section width by 35% and text sizes by 35%
+7 minutes ago
+•
+Prompt: adjust sections by increasing by 35%
+
+RS
+
+hesychast85
+Assistant
+2 minutes ago
+I'll increase the section width by 35% from the current 94.5% to approximately 127.5%, and also increase various dimensions throughout the design.
+
+index.html
+Assistant automatically restarted your App after applying file changes. You can disable this behavior in 
+.
+Checkpoint made
+Increase section widths and dimensions by 35%
+4 minutes ago
+•
+Prompt: Perfect. Please supply the Index.html code so I can commit to github
+
+RS
+
+hesychast85
+Assistant
+just now
+Here is your current index.html code ready for GitHub commit:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fat Tail Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto Mono', monospace;
+      background: #2d7d7d;
+      color: #333;
+      min-height: 100vh;
+      padding: 15px;
+      transform: scale(0.7);
+      transform-origin: top left;
+      width: 142.86%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      color: #ff6b9d;
+      font-size: 27px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+    .section {
+      background: #faf8f5;
+      border: 2px solid #666;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      width: 127.5%;
+      max-width: 1184px;
+    }
+    .section-title {
+      font-weight: 700;
+      font-size: 19px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    .pink-title {
+      color: #ff6b9d;
+    }
+    .form-row {
+      margin-bottom: 6px;
+    }
+    .form-row label {
+      display: inline-block;
+      width: 135px;
+      font-size: 18px;
+      color: #333;
+    }
+    .form-row input, .form-row select {
+      width: 113px;
+      padding: 2px 4px;
+      border: 1px solid #999;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 18px;
+    }
+    .button-group {
+      margin-top: 8px;
+    }
+    .btn {
+      background: #e0e0e0;
+      border: 1px solid #999;
+      padding: 4px 6px;
+      margin: 2px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .btn:hover {
+      background: #d0d0d0;
+    }
+    .btn-primary {
+      background: #4a90e2;
+      color: white;
+      border-color: #357abd;
+    }
+    .btn-primary:hover {
+      background: #357abd;
+    }
+    .textarea {
+      width: 100%;
+      height: 60px;
+      padding: 4px;
+      border: 1px solid #999;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 15px;
+      resize: vertical;
+    }
+    .file-input {
+      margin-top: 4px;
+    }
+    .result-area {
+      margin-top: 8px;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      min-height: 30px;
+      font-size: 18px;
+    }
+    .pro-section {
+      background: #f0f8ff;
+    }
+    .pro-text {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+    .footer {
+      margin-top: 23px;
+      text-align: center;
+      font-size: 15px;
+      color: #333;
+      width: 127.5%;
+      max-width: 1184px;
+    }
+    .footer a {
+      color: #4a90e2;
+      text-decoration: none;
+      margin: 0 4px;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .status-text {
+      font-size: 15px;
+      color: #666;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Fat Tail Trading Terminal</div>
+  <!-- σ-Distance Calculator -->
+  <div class="section">
+    <div class="section-title pink-title">σ-Distance Calculator</div>
+    <div class="form-row">
+      <label>SPX Spot Price:</label>
+      <input type="number" id="spotPrice" placeholder="e.g. 5860" />
+    </div>
+    <div class="form-row">
+      <label>Implied Volatility (%):</label>
+      <input type="number" id="impliedVol" placeholder="e.g. 16" />
+    </div>
+    <div class="form-row">
+      <label>Days to Expiration (DTE):</label>
+      <input type="number" id="daysToExp" placeholder="e.g. 7" />
+    </div>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="calculateZones()">Calculate Zones</button>
+    </div>
+    <div class="result-area" id="sigmaResults"></div>
+  </div>
+  <!-- Manual Trade Journal -->
+  <div class="section">
+    <div class="section-title pink-title">Manual Trade Journal</div>
+    <div class="form-row">
+      <label>Trade Notes:</label>
+    </div>
+    <div class="button-group">
+      <button class="btn" onclick="addSymbol('SPX')">SPX</button>
+      <button class="btn" onclick="addSymbol('NDX')">NDX</button>
+      <button class="btn" onclick="addSymbol('butterfly')">butterfly</button>
+      <button class="btn" onclick="addSymbol('0DTE')">0DTE</button>
+      <button class="btn" onclick="addSymbol('TDTE')">TDTE</button>
+      <button class="btn" onclick="addSymbol('OPEX')">OPEX</button>
+      <button class="btn" onclick="addSymbol('GAMMA')">GAMMA</button>
+      <button class="btn" onclick="addSymbol('campaign')">campaign</button>
+    </div>
+    <div style="margin-top: 4px; font-size: 15px;">
+      <small>Enter tag and press enter</small>
+    </div>
+    <textarea class="textarea" id="tradeNotes" placeholder="SPX 5180/5190/5200 0TDE
+butterfly, 7 DTE, IV:
+16%..."></textarea>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+  <!-- Upload ThinkOrSwim CSV Log -->
+  <div class="section">
+    <div class="section-title pink-title">Upload ThinkOrSwim CSV Log</div>
+    <div class="file-input">
+      <input type="file" id="csvFile" accept=".csv" />
+      <span class="status-text" id="fileStatus">No file chosen</span>
+    </div>
+  </div>
+  <!-- Journal Log History -->
+  <div class="section">
+    <div class="section-title pink-title">Journal Log History (Live from Firebase)</div>
+    <div class="button-group">
+      <button class="btn" onclick="exportToPDF()">Export to PDF</button>
+    </div>
+    <div class="form-row" style="margin-top: 8px;">
+      <label>Filter by Tag:</label>
+      <input type="text" id="filterTag" placeholder="e.g. SPX, butterfly" />
+      <button class="btn" onclick="exportToCSV()">Export to CSV</button>
+    </div>
+    <div class="form-row">
+      <label>Search notes:</label>
+      <input type="text" id="searchNotes" placeholder="e.g. SPX, butterfly, IV" />
+      <button class="btn" onclick="loadSavedNotes()">Load Saved Notes</button>
+    </div>
+  </div>
+  <!-- Pro Mode Login -->
+  <div class="section pro-section">
+    <div class="section-title pink-title">Pro Mode Login</div>
+    <div class="pro-text">This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</div>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="loginWithGoogle()">Login with Google</button>
+    </div>
+    <div class="status-text">Not logged in</div>
+  </div>
+  <!-- Footer -->
+  <div class="footer">
+    <a href="#">TradeWise Genius</a> | 
+    <a href="#">ThinkOrSwim by Charles Schwab</a> | 
+    <a href="#">Option Alpha Education</a> | 
+    <a href="#">Tastyworks</a> | 
+    <a href="#">Robinhood</a> | 
+    <a href="#">Interactive Brokers</a>
+    <br>
+    Pro Mode coming soon - analytics, strategy tagging, and cloud sync - <a href="#">buy cloud</a>
+  </div>
+  <script>
+    // σ-Distance Calculator
+    function calculateZones() {
+      const spot = parseFloat(document.getElementById('spotPrice').value);
+      const iv = parseFloat(document.getElementById('impliedVol').value) / 100;
+      const dte = parseFloat(document.getElementById('daysToExp').value);
+      if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
+        document.getElementById('sigmaResults').innerHTML = 'Please fill in all values correctly.';
+        return;
+      }
+      const sqrtT = Math.sqrt(dte / 365);
+      const oneStdDev = spot * iv * sqrtT;
+      let results = '<strong>Standard Deviation Zones:</strong><br>';
+      for (let i = 1; i <= 3; i++) {
+        const lower = (spot - i * oneStdDev).toFixed(2);
+        const upper = (spot + i * oneStdDev).toFixed(2);
+        results += `${i}σ: ${lower} - ${upper}<br>`;
+      }
+      document.getElementById('sigmaResults').innerHTML = results;
+    }
+    // Trade Journal Functions
+    function addSymbol(symbol) {
+      const textarea = document.getElementById('tradeNotes');
+      textarea.value += symbol + ' ';
+      textarea.focus();
+    }
+    function saveNote() {
+      const notes = document.getElementById('tradeNotes').value;
+      if (notes.trim()) {
+        alert('Note saved! (In production, this would save to Firebase)');
+        // In production: save to Firebase
+      }
+    }
+    // File upload
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      document.getElementById('fileStatus').textContent = file ? file.name : 'No file chosen';
+    });
+    // Export functions
+    function exportToPDF() {
+      alert('PDF export feature (Pro Mode)');
+    }
+    function exportToCSV() {
+      alert('CSV export feature');
+    }
+    function loadSavedNotes() {
+      const filter = document.getElementById('filterTag').value;
+      const search = document.getElementById('searchNotes').value;
+      alert(`Loading notes... Filter: "${filter}", Search: "${search}"`);
+    }
     // Pro Mode
     function loginWithGoogle() {
       alert('Google OAuth login (Pro Mode feature)');
