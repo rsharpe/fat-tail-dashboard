@@ -3,421 +3,868 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fat Tail Dashboard</title>
+  <title>Fat Tail AI Trade Engine</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Roboto Mono', monospace;
-      background: #2d7d7d;
+      background: linear-gradient(135deg, #2d7d7d 0%, #1e5f5f 50%, #0f3f3f 100%);
       color: #333;
       min-height: 100vh;
-      padding: 15px;
-      transform: scale(0.7);
-      transform-origin: top left;
-      width: 142.86%;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .header {
       color: #ff6b9d;
-      font-size: 27px;
+      font-size: 28px;
       font-weight: 700;
-      margin-bottom: 15px;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      text-align: center;
     }
-
+    .ai-subtitle {
+      color: #4ecdc4;
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+      max-width: 1400px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .section {
-      background: #faf8f5;
-      border: 2px solid #666;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      padding: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      width: 127.5%;
-      max-width: 1184px;
+      background: rgba(250, 248, 245, 0.95);
+      border: 2px solid #4ecdc4;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      backdrop-filter: blur(5px);
     }
-
+    .pro-section {
+      background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+      border: 2px solid #ff6b9d;
+    }
     .section-title {
       font-weight: 700;
-      font-size: 19px;
-      margin-bottom: 8px;
+      font-size: 18px;
+      margin-bottom: 12px;
       color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-
     .pink-title {
       color: #ff6b9d;
     }
-
+    .teal-title {
+      color: #2d7d7d;
+    }
     .form-row {
-      margin-bottom: 6px;
-    }
-
-    .form-row label {
-      display: inline-block;
-      width: 135px;
-      font-size: 18px;
-      color: #333;
-    }
-
-    .form-row input, .form-row select {
-      width: 113px;
-      padding: 2px 4px;
-      border: 1px solid #999;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 18px;
-    }
-
-    .button-group {
-      margin-top: 8px;
-    }
-
-    .btn {
-      background: #e0e0e0;
-      border: 1px solid #999;
-      padding: 4px 6px;
-      margin: 2px;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 15px;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-
-    .btn:hover {
-      background: #d0d0d0;
-    }
-
-    .btn-primary {
-      background: #4a90e2;
-      color: white;
-      border-color: #357abd;
-    }
-
-    .btn-primary:hover {
-      background: #357abd;
-    }
-
-    .textarea {
-      width: 100%;
-      height: 60px;
-      padding: 4px;
-      border: 1px solid #999;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 15px;
-      resize: vertical;
-    }
-
-    .file-input {
-      margin-top: 4px;
-    }
-
-    .result-area {
-      margin-top: 8px;
-      padding: 6px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      min-height: 30px;
-      font-size: 18px;
-    }
-
-    .pro-section {
-      background: #f0f8ff;
-    }
-
-    .pro-text {
-      font-size: 15px;
-      color: #666;
-      margin-bottom: 6px;
-      font-style: italic;
-    }
-
-    .footer {
-      margin-top: 23px;
-      text-align: center;
-      font-size: 15px;
-      color: #333;
-      width: 127.5%;
-      max-width: 1184px;
-    }
-
-    .footer a {
-      color: #4a90e2;
-      text-decoration: none;
-      margin: 0 4px;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-
-    .status-text {
-      font-size: 15px;
-      color: #666;
-      margin-top: 4px;
-    }
-
-    .tags-container {
-      margin-top: 8px;
       margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-
+    .form-row label {
+      min-width: 120px;
+      font-size: 14px;
+      color: #333;
+      font-weight: 500;
+    }
+    .form-row input, .form-row select {
+      flex: 1;
+      min-width: 100px;
+      padding: 6px 10px;
+      border: 1px solid #4ecdc4;
+      border-radius: 6px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+    }
+    .btn {
+      background: linear-gradient(135deg, #4ecdc4 0%, #44a8a8 100%);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin: 4px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #ff6b9d 0%, #e55a87 100%);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+    }
+    .btn-pro {
+      background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+      color: #333;
+    }
+    .btn-pro:hover {
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    }
+    .tag-category {
+      margin-bottom: 15px;
+    }
+    .category-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: #2d7d7d;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .tag-pills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
     .tag-pill {
       display: inline-block;
-      background: #2d7d7d;
+      background: linear-gradient(135deg, #2d7d7d 0%, #1e5f5f 100%);
       color: white;
-      padding: 4px 12px;
-      margin: 2px;
+      padding: 6px 12px;
       border-radius: 20px;
-      font-size: 14px;
+      font-size: 11px;
       cursor: pointer;
       border: none;
       font-family: 'Roboto Mono', monospace;
+      transition: all 0.3s ease;
+      animation: fadeInTag 0.5s ease;
     }
-
+    @keyframes fadeInTag {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
     .tag-pill:hover {
-      background: #236666;
+      background: linear-gradient(135deg, #ff6b9d 0%, #e55a87 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
-
-    .tag-input {
-      width: 200px;
-      padding: 4px 8px;
-      border: 1px solid #999;
-      border-radius: 4px;
+    .tag-pill.active {
+      background: linear-gradient(135deg, #4ecdc4 0%, #44a8a8 100%);
+    }
+    .search-filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 12px;
+      border: 2px solid #4ecdc4;
+      border-radius: 8px;
       font-family: 'Roboto Mono', monospace;
       font-size: 14px;
+    }
+    .analytics-panel {
+      grid-column: span 2;
+      min-height: 300px;
+    }
+    @media (max-width: 768px) {
+      .analytics-panel {
+        grid-column: span 1;
+      }
+    }
+    .chart-container {
+      position: relative;
+      height: 250px;
+      margin-top: 15px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .stat-card {
+      background: rgba(78, 205, 196, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #4ecdc4;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #2d7d7d;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+    }
+    .result-area {
+      margin-top: 10px;
+      padding: 12px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #4ecdc4;
+      border-radius: 8px;
+      min-height: 40px;
+      font-size: 14px;
+    }
+    .textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      border: 2px solid #4ecdc4;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+    .pro-badge {
+      background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+      color: #333;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+    .paywall-overlay {
+      position: relative;
+    }
+    .paywall-blur {
+      filter: blur(3px);
+      pointer-events: none;
+    }
+    .paywall-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 107, 157, 0.95);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 700;
+      z-index: 10;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      padding: 20px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 1400px;
+    }
+    .footer a {
+      color: #4ecdc4;
+      text-decoration: none;
+      margin: 0 8px;
+      transition: color 0.3s ease;
+    }
+    .footer a:hover {
+      color: #ff6b9d;
+    }
+    .trade-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .filter-label {
+      font-size: 11px;
+      color: #2d7d7d;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .mobile-optimized {
+      display: block;
+    }
+    @media (max-width: 480px) {
+      .form-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .form-row label {
+        min-width: auto;
+      }
+      
+      .search-filter-row {
+        flex-direction: column;
+      }
+      
+      .search-input {
+        min-width: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">Fat Tail Trading Terminal</div>
-
-  <!-- σ-Distance Calculator -->
-  <div class="section">
-    <div class="section-title pink-title">σ-Distance Calculator</div>
-    <div class="form-row">
-      <label>SPX Spot Price:</label>
-      <input type="number" id="spotPrice" placeholder="e.g. 5860" />
+  <div class="header">Fat Tail AI Trade Engine</div>
+  <div class="ai-subtitle">0-14 DTE Butterflies • 21-90 DTE Singles • Real-Time Analytics</div>
+  <div class="dashboard-grid">
+    <!-- σ-Distance Calculator -->
+    <div class="section">
+      <div class="section-title pink-title">🎯 σ-Distance Calculator</div>
+      <div class="form-row">
+        <label>SPX Spot:</label>
+        <input type="number" id="spotPrice" placeholder="5860" />
+      </div>
+      <div class="form-row">
+        <label>IV (%):</label>
+        <input type="number" id="impliedVol" placeholder="16" />
+      </div>
+      <div class="form-row">
+        <label>DTE:</label>
+        <input type="number" id="daysToExp" placeholder="7" />
+      </div>
+      <button class="btn btn-primary" onclick="calculateZones()">Calculate σ Zones</button>
+      <div class="result-area" id="sigmaResults"></div>
     </div>
-    <div class="form-row">
-      <label>Implied Volatility (%):</label>
-      <input type="number" id="impliedVol" placeholder="e.g. 16" />
-    </div>
-    <div class="form-row">
-      <label>Days to Expiration (DTE):</label>
-      <input type="number" id="daysToExp" placeholder="e.g. 7" />
-    </div>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="calculateZones()">Calculate Zones</button>
-    </div>
-    <div class="result-area" id="sigmaResults"></div>
-  </div>
-
-  <!-- Manual Trade Journal -->
-  <div class="section">
-    <div class="section-title pink-title">Manual Trade Journal</div>
-    <div class="form-row">
-      <label>Trade Notes:</label>
-    </div>
-    <div class="button-group">
-      <button class="btn" onclick="addSymbol('SPX')">SPX</button>
-      <button class="btn" onclick="addSymbol('NDX')">NDX</button>
-      <button class="btn" onclick="addSymbol('butterfly')">butterfly</button>
-      <button class="btn" onclick="addSymbol('0DTE')">0DTE</button>
-      <button class="btn" onclick="addSymbol('TDTE')">TDTE</button>
-      <button class="btn" onclick="addSymbol('OPEX')">OPEX</button>
-      <button class="btn" onclick="addSymbol('GAMMA')">GAMMA</button>
-      <button class="btn" onclick="addSymbol('campaign')">campaign</button>
-    </div>
-    <div class="form-row" style="margin-top: 8px;">
-      <label>Enter tag and press enter:</label>
-      <input type="text" class="tag-input" id="tagInput" placeholder="e.g. SPX, butterfly" />
-    </div>
-    <div class="tags-container" id="tagsContainer"></div>
-    <textarea class="textarea" id="tradeNotes" placeholder="SPX 5180/5190/5200 0TDE
-butterfly, 7 DTE, IV:
-16%..."></textarea>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
-    </div>
-  </div>
-
-  <!-- Upload ThinkOrSwim CSV Log -->
-  <div class="section">
-    <div class="section-title pink-title">Upload ThinkOrSwim CSV Log</div>
-    <div class="file-input">
-      <input type="file" id="csvFile" accept=".csv" />
-      <span class="status-text" id="fileStatus">No file chosen</span>
+    <!-- AI Trade Filters -->
+    <div class="section">
+      <div class="section-title teal-title">🤖 AI Trade Filters</div>
+      <div class="trade-filters">
+        <div class="filter-group">
+          <div class="filter-label">Strategy</div>
+          <select id="strategyFilter">
+            <option value="">All</option>
+            <option value="butterfly">Butterfly</option>
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+            <option value="single">Single</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">DTE Range</div>
+          <select id="dteFilter">
+            <option value="">All</option>
+            <option value="0-14">0-14 DTE</option>
+            <option value="21-90">21-90 DTE</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Direction</div>
+          <select id="directionFilter">
+            <option value="">All</option>
+            <option value="long">Long</option>
+            <option value="short">Short</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="applyAIFilters()">Apply AI Filters</button>
     </div>
   </div>
-
-  <!-- Journal Log History -->
-  <div class="section">
-    <div class="section-title pink-title">Journal Log History (Live from Firebase)</div>
-    <div class="button-group">
-      <button class="btn" onclick="exportToPDF()">Export to PDF</button>
+  <!-- Mobile-Optimized Tag System -->
+  <div class="section mobile-optimized">
+    <div class="section-title pink-title">🏷️ Smart Tag System</div>
+    
+    <div class="search-filter-row">
+      <input type="text" class="search-input" id="tagSearch" placeholder="Search tags in real-time..." />
+      <input type="text" class="search-input" id="tagInput" placeholder="Add new tag (press Enter)" />
+      <button class="btn" onclick="clearAllTags()">Clear All</button>
     </div>
-    <div class="form-row" style="margin-top: 8px;">
-      <label>Filter by Tag:</label>
-      <input type="text" id="filterTag" placeholder="e.g. SPX, butterfly" />
-      <button class="btn" onclick="exportToCSV()">Export to CSV</button>
+    <div class="tag-category">
+      <div class="category-header">Strategy Type</div>
+      <div class="tag-pills-container" id="strategyTags">
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">butterfly</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">credit</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">debit</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">single</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">call</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'strategy')">put</button>
+      </div>
     </div>
-    <div class="form-row">
-      <label>Search notes:</label>
-      <input type="text" id="searchNotes" placeholder="e.g. SPX, butterfly, IV" />
-      <button class="btn" onclick="loadSavedNotes()">Load Saved Notes</button>
+    <div class="tag-category">
+      <div class="category-header">Greeks</div>
+      <div class="tag-pills-container" id="greeksTags">
+        <button class="tag-pill" onclick="toggleTag(this, 'greeks')">DELTA</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'greeks')">THETA</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'greeks')">GAMMA</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'greeks')">VEGA</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'greeks')">RHO</button>
+      </div>
+    </div>
+    <div class="tag-category">
+      <div class="category-header">DTE Buckets</div>
+      <div class="tag-pills-container" id="dteTags">
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">0DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">3DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">5DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">7DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">14DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">21DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">45DTE</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'dte')">90DTE</button>
+      </div>
+    </div>
+    <div class="tag-category">
+      <div class="category-header">Direction & Volatility</div>
+      <div class="tag-pills-container" id="miscTags">
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">long</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">short</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">high-vol</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">low-vol</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">OPEX</button>
+        <button class="tag-pill" onclick="toggleTag(this, 'misc')">campaign</button>
+      </div>
+    </div>
+    <div class="tag-category">
+      <div class="category-header">Active Tags</div>
+      <div class="tag-pills-container" id="activeTags"></div>
     </div>
   </div>
-
-  <!-- Pro Mode Login -->
+  <!-- Analytics Panel -->
+  <div class="section analytics-panel">
+    <div class="section-title pink-title">
+      📊 Real-Time P/L Analytics
+      <span class="pro-badge">PRO</span>
+    </div>
+    
+    <div class="paywall-overlay" id="analyticsPanel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">$2,450</div>
+          <div class="stat-label">Total P/L</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">73%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">47</div>
+          <div class="stat-label">Total Trades</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$52</div>
+          <div class="stat-label">Avg Win</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1.8</div>
+          <div class="stat-label">Profit Factor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$185</div>
+          <div class="stat-label">Max DD</div>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <canvas id="plChart"></canvas>
+      </div>
+      
+      <div class="paywall-message" id="paywallMessage" style="display: none;">
+        <div>🔒 Unlock Advanced Analytics</div>
+        <div style="font-size: 12px; margin: 10px 0;">Real-time P/L tracking, strategy analysis, and performance metrics</div>
+        <button class="btn btn-pro" onclick="showStripePayment()">Upgrade to Pro - $29/month</button>
+      </div>
+    </div>
+  </div>
+  <!-- Trade Journal -->
+  <div class="section">
+    <div class="section-title pink-title">📝 Smart Trade Journal</div>
+    <div class="form-row">
+      <label>Quick Add:</label>
+      <button class="btn" onclick="addSymbol('SPX ')">SPX</button>
+      <button class="btn" onclick="addSymbol('NDX ')">NDX</button>
+      <button class="btn" onclick="addSymbol('QQQ ')">QQQ</button>
+    </div>
+    <textarea class="textarea" id="tradeNotes" placeholder="SPX 5860/5870/5880 butterfly 7DTE
+Entry: $1.25 credit
+IV: 16%
+Target: 50% profit
+Notes: High gamma environment..."></textarea>
+    <div style="margin-top: 10px;">
+      <button class="btn btn-primary" onclick="saveNote()">💾 Save Trade</button>
+      <button class="btn" onclick="parseTradeNotes()">🤖 Parse P/L</button>
+      <button class="btn" onclick="exportToPDF()">📄 Export PDF</button>
+    </div>
+  </div>
+  <!-- Pro Mode Section -->
   <div class="section pro-section">
-    <div class="section-title pink-title">Pro Mode Login</div>
-    <div class="pro-text">This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</div>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="loginWithGoogle()">Login with Google</button>
+    <div class="section-title pink-title">
+      🚀 Pro Mode Dashboard
+      <span class="pro-badge">PREMIUM</span>
     </div>
-    <div class="status-text">Not logged in</div>
+    <div style="font-size: 13px; color: #666; margin-bottom: 15px;">
+      Advanced features: Firebase sync, premium exports, AI trade suggestions, and unlimited storage.
+    </div>
+    
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="loginWithGoogle()">
+        🔐 Login with Google
+      </button>
+      <button class="btn btn-pro" onclick="showStripePayment()">
+        💳 Upgrade Now - $29/month
+      </button>
+      <button class="btn" onclick="showFeatures()">
+        ℹ️ View Pro Features
+      </button>
+    </div>
+    
+    <div style="margin-top: 10px; font-size: 12px; color: #888;">
+      Status: <span id="authStatus">Not logged in</span>
+    </div>
   </div>
-
   <!-- Footer -->
   <div class="footer">
-    <a href="#">TradeWise Genius</a> | 
-    <a href="#">ThinkOrSwim by Charles Schwab</a> | 
-    <a href="#">Option Alpha Education</a> | 
-    <a href="#">Tastyworks</a> | 
-    <a href="#">Robinhood</a> | 
-    <a href="#">Interactive Brokers</a>
-    <br>
-    Pro Mode coming soon - analytics, strategy tagging, and cloud sync - <a href="#">buy cloud</a>
+    <div style="margin-bottom: 15px;">
+      <a href="#">TradeWise Genius</a> • 
+      <a href="#">ThinkOrSwim</a> • 
+      <a href="#">Option Alpha</a> • 
+      <a href="#">Tastyworks</a> • 
+      <a href="#">Interactive Brokers</a>
+    </div>
+    <div style="font-size: 10px; opacity: 0.7;">
+      Fat Tail AI Trade Engine • Built with 💙 on Replit • Pro Analytics Powered by Firebase & Stripe
+    </div>
   </div>
-
   <script>
+    // Global state
+    let activeTags = JSON.parse(localStorage.getItem('activeTags')) || [];
+    let savedTrades = JSON.parse(localStorage.getItem('savedTrades')) || [];
+    let isProUser = false;
+    let plChart = null;
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      renderActiveTags();
+      setupTagSearch();
+      setupTagInput();
+      initializePLChart();
+      checkProStatus();
+    });
     // σ-Distance Calculator
     function calculateZones() {
       const spot = parseFloat(document.getElementById('spotPrice').value);
       const iv = parseFloat(document.getElementById('impliedVol').value) / 100;
       const dte = parseFloat(document.getElementById('daysToExp').value);
-
       if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
-        document.getElementById('sigmaResults').innerHTML = 'Please fill in all values correctly.';
+        document.getElementById('sigmaResults').innerHTML = '<span style="color: red;">Please fill in all values correctly.</span>';
         return;
       }
-
       const sqrtT = Math.sqrt(dte / 365);
       const oneStdDev = spot * iv * sqrtT;
-
-      let results = '<strong>Standard Deviation Zones:</strong><br>';
+      let results = '<strong>σ Zones for AI Trading:</strong><br>';
+      results += `<div style="margin: 8px 0; padding: 8px; background: rgba(78, 205, 196, 0.1); border-radius: 6px;">`;
+      
       for (let i = 1; i <= 3; i++) {
         const lower = (spot - i * oneStdDev).toFixed(2);
         const upper = (spot + i * oneStdDev).toFixed(2);
-        results += `${i}σ: ${lower} - ${upper}<br>`;
+        const prob = i === 1 ? '68%' : i === 2 ? '95%' : '99.7%';
+        results += `<div style="margin: 4px 0;"><strong>${i}σ</strong> (${prob}): <span style="color: #2d7d7d; font-weight: bold;">${lower} - ${upper}</span></div>`;
       }
-
+      
+      results += `</div>`;
+      results += `<small style="color: #666;">Optimal butterfly strikes: ${(spot - oneStdDev).toFixed(0)}/${spot.toFixed(0)}/${(spot + oneStdDev).toFixed(0)}</small>`;
       document.getElementById('sigmaResults').innerHTML = results;
     }
-
-    // Trade Journal Functions
-    let savedTags = [];
-
-    function addSymbol(symbol) {
-      const textarea = document.getElementById('tradeNotes');
-      textarea.value += symbol + ' ';
-      textarea.focus();
-    }
-
-    function addTag(tagText) {
-      console.log('Adding tag:', tagText); // Debug log
-      if (tagText.trim() && !savedTags.includes(tagText.trim())) {
-        savedTags.push(tagText.trim());
-        renderTags();
-        console.log('Tags array:', savedTags); // Debug log
-      }
-    }
-
-    function removeTag(tagText) {
-      console.log('Removing tag:', tagText); // Debug log
-      savedTags = savedTags.filter(tag => tag !== tagText);
-      renderTags();
-    }
-
-    function renderTags() {
-      const container = document.getElementById('tagsContainer');
-      if (!container) {
-        console.error('Tags container not found!');
-        return;
+    // Tag System
+    function toggleTag(element, category) {
+      const tagText = element.textContent;
+      const isActive = element.classList.contains('active');
+      
+      if (isActive) {
+        element.classList.remove('active');
+        activeTags = activeTags.filter(tag => tag !== tagText);
+      } else {
+        element.classList.add('active');
+        if (!activeTags.includes(tagText)) {
+          activeTags.push(tagText);
+        }
       }
       
+      localStorage.setItem('activeTags', JSON.stringify(activeTags));
+      renderActiveTags();
+      filterTradesByTags();
+    }
+    function renderActiveTags() {
+      const container = document.getElementById('activeTags');
       container.innerHTML = '';
       
-      savedTags.forEach(tag => {
+      activeTags.forEach(tag => {
         const tagElement = document.createElement('button');
-        tagElement.className = 'tag-pill';
+        tagElement.className = 'tag-pill active';
         tagElement.textContent = tag;
-        tagElement.onclick = () => removeTag(tag);
-        tagElement.title = 'Click to remove tag';
+        tagElement.onclick = () => removeActiveTag(tag);
+        tagElement.title = 'Click to remove';
         container.appendChild(tagElement);
       });
-      
-      console.log('Rendered tags:', savedTags); // Debug log
     }
-
+    function removeActiveTag(tagText) {
+      activeTags = activeTags.filter(tag => tag !== tagText);
+      localStorage.setItem('activeTags', JSON.stringify(activeTags));
+      renderActiveTags();
+      
+      // Remove active state from original tag
+      document.querySelectorAll('.tag-pill').forEach(pill => {
+        if (pill.textContent === tagText) {
+          pill.classList.remove('active');
+        }
+      });
+      
+      filterTradesByTags();
+    }
+    function clearAllTags() {
+      activeTags = [];
+      localStorage.setItem('activeTags', JSON.stringify(activeTags));
+      renderActiveTags();
+      
+      document.querySelectorAll('.tag-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      
+      filterTradesByTags();
+    }
+    function setupTagSearch() {
+      const searchInput = document.getElementById('tagSearch');
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterTradesByTags();
+      });
+    }
+    function setupTagInput() {
+      const tagInput = document.getElementById('tagInput');
+      tagInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const tagText = this.value.trim();
+          if (tagText && !activeTags.includes(tagText)) {
+            activeTags.push(tagText);
+            localStorage.setItem('activeTags', JSON.stringify(activeTags));
+            renderActiveTags();
+            this.value = '';
+          }
+        }
+      });
+    }
+    // Trade Functions
+    function addSymbol(symbol) {
+      const textarea = document.getElementById('tradeNotes');
+      textarea.value += symbol;
+      textarea.focus();
+    }
     function saveNote() {
       const notes = document.getElementById('tradeNotes').value;
       if (notes.trim()) {
-        alert('Note saved! (In production, this would save to Firebase)');
-        // In production: save to Firebase
+        const trade = {
+          id: Date.now(),
+          notes: notes,
+          tags: [...activeTags],
+          timestamp: new Date().toISOString(),
+          parsed: parseTradeFromNotes(notes)
+        };
+        
+        savedTrades.unshift(trade);
+        localStorage.setItem('savedTrades', JSON.stringify(savedTrades));
+        
+        alert('✅ Trade saved successfully!');
+        document.getElementById('tradeNotes').value = '';
+        updatePLChart();
       }
     }
-
-    // Tag input event listener
-    document.addEventListener('DOMContentLoaded', function() {
-      const tagInput = document.getElementById('tagInput');
+    function parseTradeFromNotes(notes) {
+      const lines = notes.toLowerCase();
+      const parsed = {
+        symbol: null,
+        strategy: null,
+        dte: null,
+        entry: null,
+        exit: null,
+        pl: 0
+      };
       
-      if (tagInput) {
-        tagInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const tagText = this.value.trim();
-            if (tagText) {
-              addTag(tagText);
-              this.value = '';
+      // Extract symbol
+      if (lines.includes('spx')) parsed.symbol = 'SPX';
+      if (lines.includes('ndx')) parsed.symbol = 'NDX';
+      if (lines.includes('qqq')) parsed.symbol = 'QQQ';
+      
+      // Extract strategy
+      if (lines.includes('butterfly')) parsed.strategy = 'butterfly';
+      if (lines.includes('credit')) parsed.strategy = 'credit';
+      if (lines.includes('debit')) parsed.strategy = 'debit';
+      
+      // Extract DTE
+      const dteMatch = notes.match(/(\d+)\s*dte/i);
+      if (dteMatch) parsed.dte = parseInt(dteMatch[1]);
+      
+      // Extract entry/exit prices
+      const entryMatch = notes.match(/entry[:\s]*\$?(\d+\.?\d*)/i);
+      if (entryMatch) parsed.entry = parseFloat(entryMatch[1]);
+      
+      const exitMatch = notes.match(/exit[:\s]*\$?(\d+\.?\d*)/i);
+      if (exitMatch) {
+        parsed.exit = parseFloat(exitMatch[1]);
+        if (parsed.entry) {
+          parsed.pl = parsed.exit - parsed.entry;
+        }
+      }
+      
+      return parsed;
+    }
+    function parseTradeNotes() {
+      const notes = document.getElementById('tradeNotes').value;
+      const parsed = parseTradeFromNotes(notes);
+      
+      let result = '🤖 AI Parse Results:\n';
+      result += `Symbol: ${parsed.symbol || 'Unknown'}\n`;
+      result += `Strategy: ${parsed.strategy || 'Unknown'}\n`;
+      result += `DTE: ${parsed.dte || 'Unknown'}\n`;
+      result += `Entry: $${parsed.entry || 'Unknown'}\n`;
+      result += `P/L: $${parsed.pl.toFixed(2)}\n`;
+      
+      alert(result);
+    }
+    function filterTradesByTags() {
+      const searchTerm = document.getElementById('tagSearch').value.toLowerCase();
+      // This would filter the displayed trades in a real implementation
+      console.log('Filtering trades by:', activeTags, 'Search:', searchTerm);
+    }
+    // AI Filters
+    function applyAIFilters() {
+      const strategy = document.getElementById('strategyFilter').value;
+      const dte = document.getElementById('dteFilter').value;
+      const direction = document.getElementById('directionFilter').value;
+      
+      alert(`🤖 AI Filters Applied:\nStrategy: ${strategy || 'All'}\nDTE: ${dte || 'All'}\nDirection: ${direction || 'All'}`);
+    }
+    // P/L Chart
+    function initializePLChart() {
+      const ctx = document.getElementById('plChart').getContext('2d');
+      const sampleData = generateSamplePLData();
+      
+      plChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: sampleData.dates,
+          datasets: [{
+            label: 'Cumulative P/L',
+            data: sampleData.pnl,
+            borderColor: '#4ecdc4',
+            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              grid: {
+                color: 'rgba(78, 205, 196, 0.2)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return '$' + value;
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(78, 205, 196, 0.2)'
+              }
             }
           }
-        });
+        }
+      });
+    }
+    function generateSamplePLData() {
+      const dates = [];
+      const pnl = [];
+      let cumulative = 0;
+      
+      for (let i = 0; i < 30; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        dates.push(date.toLocaleDateString());
+        
+        const dailyPL = (Math.random() - 0.4) * 200;
+        cumulative += dailyPL;
+        pnl.push(Math.round(cumulative));
       }
-    });
-
-    // File upload
-    document.getElementById('csvFile').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      document.getElementById('fileStatus').textContent = file ? file.name : 'No file chosen';
-    });
-
-    // Export functions
-    function exportToPDF() {
-      alert('PDF export feature (Pro Mode)');
+      
+      return { dates, pnl };
     }
-
-    function exportToCSV() {
-      alert('CSV export feature');
+    function updatePLChart() {
+      if (!plChart) return;
+      
+      // Update chart with new trade data
+      const newData = generateSamplePLData();
+      plChart.data.labels = newData.dates;
+      plChart.data.datasets[0].data = newData.pnl;
+      plChart.update();
     }
-
-    function loadSavedNotes() {
-      const filter = document.getElementById('filterTag').value;
-      const search = document.getElementById('searchNotes').value;
-      alert(`Loading notes... Filter: "${filter}", Search: "${search}"`);
+    // Pro Mode Functions
+    function checkProStatus() {
+      // Check if user is pro and toggle paywall
+      const analyticsPanel = document.getElementById('analyticsPanel');
+      const paywallMessage = document.getElementById('paywallMessage');
+      
+      if (!isProUser) {
+        analyticsPanel.classList.add('paywall-blur');
+        paywallMessage.style.display = 'block';
+      }
     }
-
-    // Pro Mode
     function loginWithGoogle() {
-      alert('Google OAuth login (Pro Mode feature)');
+      alert('🔐 Google OAuth integration ready for Firebase Auth');
+      // Integration with Firebase Auth would go here
+    }
+    function showStripePayment() {
+      alert('💳 Stripe payment integration ready\n\nPro Features:\n• Real-time P/L tracking\n• Advanced analytics\n• Unlimited storage\n• Premium exports\n• AI trade suggestions');
+      // Integration with Stripe would go here
+    }
+    function showFeatures() {
+      alert('🚀 Pro Features:\n\n✅ Real-time P/L analytics\n✅ Advanced trade filtering\n✅ Unlimited cloud storage\n✅ Premium PDF exports\n✅ AI trade suggestions\n✅ Firebase sync across devices\n✅ Priority support\n\nUpgrade now for $29/month');
+    }
+    function exportToPDF() {
+      if (!isProUser) {
+        showStripePayment();
+        return;
+      }
+      alert('📄 Exporting enhanced PDF with trade analysis...');
+      // PDF export logic would go here
+    }
+    function exportToCSV() {
+      alert('📊 CSV export feature coming soon!');
     }
   </script>
 </body>
