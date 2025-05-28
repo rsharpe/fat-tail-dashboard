@@ -473,8 +473,16 @@
                 <label>DTE Range:</label>
                 <select id="dteFilter">
                   <option value="">All</option>
-                  <option value="0-14">0-14 DTE</option>
-                  <option value="21-90">21-90 DTE</option>
+                  <option value="3">3DTE</option>
+                  <option value="5">5DTE</option>
+                  <option value="7">7DTE</option>
+                  <option value="10">10DTE</option>
+                  <option value="14">14DTE</option>
+                  <option value="21">21DTE</option>
+                  <option value="30">30DTE</option>
+                  <option value="45">45DTE</option>
+                  <option value="60">60DTE</option>
+                  <option value="90">90DTE</option>
                 </select>
               </div>
               <div class="form-row" style="margin-bottom: 8px;">
@@ -503,9 +511,9 @@
     <div class="section-title pink-title">🏷️ Smart Tag System & Trade Journal</div>
     
     <!-- Smart Tag System & Trade Journal - Same Level -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; height: 400px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; height: 462px;">
       <!-- Smart Tag System -->
-      <div style="height: 400px; overflow-y: auto;">
+      <div style="height: 462px; overflow-y: auto;">
         <div style="font-weight: 700; color: #ff6b9d; margin-bottom: 15px; font-size: 16px;">🏷️ Smart Tag System</div>
         
         <div class="form-row">
@@ -550,6 +558,7 @@
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">3DTE</button>
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">5DTE</button>
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">7DTE</button>
+            <button class="tag-pill" onclick="toggleTag(this, 'dte')">10DTE</button>
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">14DTE</button>
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">21DTE</button>
             <button class="tag-pill" onclick="toggleTag(this, 'dte')">30DTE</button>
@@ -564,10 +573,6 @@
           <div class="tag-pills-container" id="miscTags">
             <button class="tag-pill" onclick="toggleTag(this, 'misc')">long</button>
             <button class="tag-pill" onclick="toggleTag(this, 'misc')">short</button>
-            <button class="tag-pill" onclick="toggleTag(this, 'misc')">high-vol</button>
-            <button class="tag-pill" onclick="toggleTag(this, 'misc')">low-vol</button>
-            <button class="tag-pill" onclick="toggleTag(this, 'misc')">OPEX</button>
-            <button class="tag-pill" onclick="toggleTag(this, 'misc')">campaign</button>
           </div>
         </div>
 
@@ -578,7 +583,7 @@
       </div>
       
       <!-- Smart Trade Journal -->
-      <div style="height: 400px; overflow-y: auto;">
+      <div style="height: 462px; overflow-y: auto;">
         <div style="font-weight: 700; color: #ff6b9d; margin-bottom: 15px; font-size: 16px;">📝 Smart Trade Journal</div>
         
         <div class="form-row">
