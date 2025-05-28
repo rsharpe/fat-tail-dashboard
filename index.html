@@ -4,282 +4,101 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fat Tail Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Roboto Mono', monospace;
-      background: #2d7d7d;
-      color: #333;
-      min-height: 100vh;
-      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      padding: 2rem;
     }
-    .header {
-      color: #ff6b9d;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    h1, h2 {
+      color: #38bdf8;
     }
-    .section {
-      background: #faf8f5;
-      border: 2px solid #666;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    .card {
+      background: #1e293b;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
-    
-    .section-title {
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 10px;
-      color: #333;
+    label {
+      display: block;
+      margin: 0.5rem 0 0.2rem;
     }
-    .pink-title {
-      color: #ff6b9d;
-    }
-    .form-row {
-      margin-bottom: 8px;
-    }
-    .form-row label {
-      display: inline-block;
-      width: 180px;
-      font-size: 12px;
-      color: #333;
-    }
-    .form-row input, .form-row select {
-      width: 150px;
-      padding: 2px 4px;
-      border: 1px solid #999;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 12px;
-    }
-    .button-group {
-      margin-top: 10px;
-    }
-    .btn {
-      background: #e0e0e0;
-      border: 1px solid #999;
-      padding: 4px 8px;
-      margin: 2px;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-    .btn:hover {
-      background: #d0d0d0;
-    }
-    .btn-primary {
-      background: #4a90e2;
-      color: white;
-      border-color: #357abd;
-    }
-    .btn-primary:hover {
-      background: #357abd;
-    }
-    .textarea {
+    input {
       width: 100%;
-      height: 80px;
-      padding: 4px;
-      border: 1px solid #999;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 11px;
-      resize: vertical;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      background: #334155;
+      color: #f1f5f9;
+      margin-bottom: 1rem;
     }
-    .file-input {
-      margin-top: 5px;
+    button {
+      background: #38bdf8;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #0f172a;
     }
-    .result-area {
-      margin-top: 10px;
-      padding: 8px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      min-height: 40px;
-      font-size: 12px;
-    }
-    .pro-section {
-      background: #f0f8ff;
-    }
-    .pro-text {
-      font-size: 11px;
-      color: #666;
-      margin-bottom: 8px;
-      font-style: italic;
-    }
-    .footer {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 10px;
-      color: #333;
-    }
-    .footer a {
-      color: #4a90e2;
-      text-decoration: none;
-      margin: 0 5px;
-    }
-    .footer a:hover {
-      text-decoration: underline;
-    }
-    .status-text {
-      font-size: 11px;
-      color: #666;
-      margin-top: 5px;
+    .result {
+      margin-top: 1rem;
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
-  <div class="header">Fat Tail Trading Terminal</div>
-  <!-- σ-Distance Calculator -->
-  <div class="section">
-    <div class="section-title pink-title">σ-Distance Calculator</div>
-    <div class="form-row">
-      <label>SPX Spot Price:</label>
-      <input type="number" id="spotPrice" placeholder="e.g. 5860" />
-    </div>
-    <div class="form-row">
-      <label>Implied Volatility (%):</label>
-      <input type="number" id="impliedVol" placeholder="e.g. 16" />
-    </div>
-    <div class="form-row">
-      <label>Days to Expiration (DTE):</label>
-      <input type="number" id="daysToExp" placeholder="e.g. 7" />
-    </div>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="calculateZones()">Calculate Zones</button>
-    </div>
-    <div class="result-area" id="sigmaResults"></div>
+  <h1>Fat Tail Trade Dashboard</h1>
+
+  <div class="card">
+    <h2>&sigma;-Distance Calculator</h2>
+    <label for="spot">SPX Spot Price:</label>
+    <input type="number" id="spot" placeholder="e.g., 5860" />
+
+    <label for="iv">Implied Volatility (%):</label>
+    <input type="number" id="iv" placeholder="e.g., 16" />
+
+    <label for="dte">Days to Expiration (DTE):</label>
+    <input type="number" id="dte" placeholder="e.g., 7" />
+
+    <button onclick="calculateSigmaZones()">Calculate Zones</button>
+    <div class="result" id="sigmaResults"></div>
   </div>
-  <!-- Manual Trade Journal -->
-  <div class="section">
-    <div class="section-title pink-title">Manual Trade Journal</div>
-    <div class="form-row">
-      <label>Trade Notes:</label>
-    </div>
-    <div class="button-group">
-      <button class="btn" onclick="addSymbol('SPX')">SPX</button>
-      <button class="btn" onclick="addSymbol('NDX')">NDX</button>
-      <button class="btn" onclick="addSymbol('butterfly')">butterfly</button>
-      <button class="btn" onclick="addSymbol('0DTE')">0DTE</button>
-      <button class="btn" onclick="addSymbol('TDTE')">TDTE</button>
-      <button class="btn" onclick="addSymbol('OPEX')">OPEX</button>
-      <button class="btn" onclick="addSymbol('GAMMA')">GAMMA</button>
-      <button class="btn" onclick="addSymbol('campaign')">campaign</button>
-    </div>
-    <div style="margin-top: 5px;">
-      <small>Enter tag and press enter</small>
-    </div>
-    <textarea class="textarea" id="tradeNotes" placeholder="SPX 5180/5190/5200 0TDE
-butterfly, 7 DTE, IV:
-16%..."></textarea>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
-    </div>
+
+  <div class="card">
+    <h2>Coming Soon</h2>
+    <ul>
+      <li>Trade Journal</li>
+      <li>Campaign Tracker</li>
+      <li>Embedded Charts (SPX, VIX)</li>
+    </ul>
   </div>
-  <!-- Upload ThinkOrSwim CSV Log -->
-  <div class="section">
-    <div class="section-title pink-title">Upload ThinkOrSwim CSV Log</div>
-    <div class="file-input">
-      <input type="file" id="csvFile" accept=".csv" />
-      <span class="status-text" id="fileStatus">No file chosen</span>
-    </div>
-  </div>
-  <!-- Journal Log History -->
-  <div class="section">
-    <div class="section-title pink-title">Journal Log History (Live from Firebase)</div>
-    <div class="button-group">
-      <button class="btn" onclick="exportToPDF()">Export to PDF</button>
-    </div>
-    <div class="form-row" style="margin-top: 10px;">
-      <label>Filter by Tag:</label>
-      <input type="text" id="filterTag" placeholder="e.g. SPX, butterfly" />
-      <button class="btn" onclick="exportToCSV()">Export to CSV</button>
-    </div>
-    <div class="form-row">
-      <label>Search notes:</label>
-      <input type="text" id="searchNotes" placeholder="e.g. SPX, butterfly, IV" />
-      <button class="btn" onclick="loadSavedNotes()">Load Saved Notes</button>
-    </div>
-  </div>
-  <!-- Pro Mode Login -->
-  <div class="section pro-section">
-    <div class="section-title pink-title">Pro Mode Login</div>
-    <div class="pro-text">This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</div>
-    <div class="button-group">
-      <button class="btn btn-primary" onclick="loginWithGoogle()">Login with Google</button>
-    </div>
-    <div class="status-text">Not logged in</div>
-  </div>
-  <!-- Footer -->
-  <div class="footer">
-    <a href="#">TradeWise Genius</a> | 
-    <a href="#">ThinkOrSwim by Charles Schwab</a> | 
-    <a href="#">Option Alpha Education</a> | 
-    <a href="#">Tastyworks</a> | 
-    <a href="#">Robinhood</a> | 
-    <a href="#">Interactive Brokers</a>
-    <br>
-    Pro Mode coming soon - analytics, strategy tagging, and cloud sync - <a href="#">buy cloud</a>
-  </div>
+
   <script>
-    // σ-Distance Calculator
-    function calculateZones() {
-      const spot = parseFloat(document.getElementById('spotPrice').value);
-      const iv = parseFloat(document.getElementById('impliedVol').value) / 100;
-      const dte = parseFloat(document.getElementById('daysToExp').value);
+    function calculateSigmaZones() {
+      const spot = parseFloat(document.getElementById('spot').value);
+      const iv = parseFloat(document.getElementById('iv').value) / 100;
+      const dte = parseFloat(document.getElementById('dte').value);
+
       if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
-        document.getElementById('sigmaResults').innerHTML = 'Please fill in all values correctly.';
+        document.getElementById('sigmaResults').innerText = 'Please fill in all values correctly.';
         return;
       }
+
       const sqrtT = Math.sqrt(dte / 365);
-      const oneStdDev = spot * iv * sqrtT;
-      let results = '<strong>Standard Deviation Zones:</strong><br>';
-      for (let i = 1; i <= 3; i++) {
-        const lower = (spot - i * oneStdDev).toFixed(2);
-        const upper = (spot + i * oneStdDev).toFixed(2);
-        results += `${i}σ: ${lower} - ${upper}<br>`;
+      const sd = spot * iv * sqrtT;
+
+      let output = '';
+      for (let i = 1; i <= 5; i++) {
+        const low = (spot - i * sd).toFixed(2);
+        const high = (spot + i * sd).toFixed(2);
+        output += `<p><strong>${i}&sigma; range:</strong> ${low} – ${high}</p>`;
       }
-      document.getElementById('sigmaResults').innerHTML = results;
-    }
-    // Trade Journal Functions
-    function addSymbol(symbol) {
-      const textarea = document.getElementById('tradeNotes');
-      textarea.value += symbol + ' ';
-      textarea.focus();
-    }
-    function saveNote() {
-      const notes = document.getElementById('tradeNotes').value;
-      if (notes.trim()) {
-        alert('Note saved! (In production, this would save to Firebase)');
-        // In production: save to Firebase
-      }
-    }
-    // File upload
-    document.getElementById('csvFile').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      document.getElementById('fileStatus').textContent = file ? file.name : 'No file chosen';
-    });
-    // Export functions
-    function exportToPDF() {
-      alert('PDF export feature (Pro Mode)');
-    }
-    function exportToCSV() {
-      alert('CSV export feature');
-    }
-    function loadSavedNotes() {
-      const filter = document.getElementById('filterTag').value;
-      const search = document.getElementById('searchNotes').value;
-      alert(`Loading notes... Filter: "${filter}", Search: "${search}"`);
-    }
-    // Pro Mode
-    function loginWithGoogle() {
-      alert('Google OAuth login (Pro Mode feature)');
+
+      document.getElementById('sigmaResults').innerHTML = output;
     }
   </script>
 </body>
