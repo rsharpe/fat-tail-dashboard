@@ -4,101 +4,420 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fat Tail Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background: #0f172a;
-      color: #f1f5f9;
-      padding: 2rem;
+      font-family: 'Roboto Mono', monospace;
+      background: #2d7d7d;
+      color: #333;
+      min-height: 100vh;
+      padding: 15px;
+      transform: scale(0.7);
+      transform-origin: top left;
+      width: 142.86%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    h1, h2 {
-      color: #38bdf8;
+
+    .header {
+      color: #ff6b9d;
+      font-size: 27px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
-    .card {
-      background: #1e293b;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+
+    .section {
+      background: #faf8f5;
+      border: 2px solid #666;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      width: 127.5%;
+      max-width: 1184px;
     }
-    label {
-      display: block;
-      margin: 0.5rem 0 0.2rem;
+
+    .section-title {
+      font-weight: 700;
+      font-size: 19px;
+      margin-bottom: 8px;
+      color: #333;
     }
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      border: none;
-      background: #334155;
-      color: #f1f5f9;
-      margin-bottom: 1rem;
+
+    .pink-title {
+      color: #ff6b9d;
     }
-    button {
-      background: #38bdf8;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
+
+    .form-row {
+      margin-bottom: 6px;
+    }
+
+    .form-row label {
+      display: inline-block;
+      width: 135px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .form-row input, .form-row select {
+      width: 113px;
+      padding: 2px 4px;
+      border: 1px solid #999;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 18px;
+    }
+
+    .button-group {
+      margin-top: 8px;
+    }
+
+    .btn {
+      background: #e0e0e0;
+      border: 1px solid #999;
+      padding: 4px 6px;
+      margin: 2px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 15px;
       cursor: pointer;
-      color: #0f172a;
+      border-radius: 2px;
     }
-    .result {
-      margin-top: 1rem;
-      font-size: 1.1rem;
+
+    .btn:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-primary {
+      background: #4a90e2;
+      color: white;
+      border-color: #357abd;
+    }
+
+    .btn-primary:hover {
+      background: #357abd;
+    }
+
+    .textarea {
+      width: 100%;
+      height: 60px;
+      padding: 4px;
+      border: 1px solid #999;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    .file-input {
+      margin-top: 4px;
+    }
+
+    .result-area {
+      margin-top: 8px;
+      padding: 6px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      min-height: 30px;
+      font-size: 18px;
+    }
+
+    .pro-section {
+      background: #f0f8ff;
+    }
+
+    .pro-text {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 6px;
+      font-style: italic;
+    }
+
+    .footer {
+      margin-top: 23px;
+      text-align: center;
+      font-size: 15px;
+      color: #333;
+      width: 127.5%;
+      max-width: 1184px;
+    }
+
+    .footer a {
+      color: #4a90e2;
+      text-decoration: none;
+      margin: 0 4px;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .status-text {
+      font-size: 15px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .tags-container {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tag-pill {
+      display: inline-block;
+      background: #2d7d7d;
+      color: white;
+      padding: 4px 12px;
+      margin: 2px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .tag-pill:hover {
+      background: #236666;
+    }
+
+    .tag-input {
+      width: 200px;
+      padding: 4px 8px;
+      border: 1px solid #999;
+      border-radius: 4px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h1>Fat Tail Trade Dashboard</h1>
+  <div class="header">Fat Tail Trading Terminal</div>
 
-  <div class="card">
-    <h2>&sigma;-Distance Calculator</h2>
-    <label for="spot">SPX Spot Price:</label>
-    <input type="number" id="spot" placeholder="e.g., 5860" />
-
-    <label for="iv">Implied Volatility (%):</label>
-    <input type="number" id="iv" placeholder="e.g., 16" />
-
-    <label for="dte">Days to Expiration (DTE):</label>
-    <input type="number" id="dte" placeholder="e.g., 7" />
-
-    <button onclick="calculateSigmaZones()">Calculate Zones</button>
-    <div class="result" id="sigmaResults"></div>
+  <!-- σ-Distance Calculator -->
+  <div class="section">
+    <div class="section-title pink-title">σ-Distance Calculator</div>
+    <div class="form-row">
+      <label>SPX Spot Price:</label>
+      <input type="number" id="spotPrice" placeholder="e.g. 5860" />
+    </div>
+    <div class="form-row">
+      <label>Implied Volatility (%):</label>
+      <input type="number" id="impliedVol" placeholder="e.g. 16" />
+    </div>
+    <div class="form-row">
+      <label>Days to Expiration (DTE):</label>
+      <input type="number" id="daysToExp" placeholder="e.g. 7" />
+    </div>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="calculateZones()">Calculate Zones</button>
+    </div>
+    <div class="result-area" id="sigmaResults"></div>
   </div>
 
-  <div class="card">
-    <h2>Coming Soon</h2>
-    <ul>
-      <li>Trade Journal</li>
-      <li>Campaign Tracker</li>
-      <li>Embedded Charts (SPX, VIX)</li>
-    </ul>
+  <!-- Manual Trade Journal -->
+  <div class="section">
+    <div class="section-title pink-title">Manual Trade Journal</div>
+    <div class="form-row">
+      <label>Trade Notes:</label>
+    </div>
+    <div class="button-group">
+      <button class="btn" onclick="addSymbol('SPX')">SPX</button>
+      <button class="btn" onclick="addSymbol('NDX')">NDX</button>
+      <button class="btn" onclick="addSymbol('butterfly')">butterfly</button>
+      <button class="btn" onclick="addSymbol('0DTE')">0DTE</button>
+      <button class="btn" onclick="addSymbol('TDTE')">TDTE</button>
+      <button class="btn" onclick="addSymbol('OPEX')">OPEX</button>
+      <button class="btn" onclick="addSymbol('GAMMA')">GAMMA</button>
+      <button class="btn" onclick="addSymbol('campaign')">campaign</button>
+    </div>
+    <div class="form-row" style="margin-top: 8px;">
+      <label>Enter tag and press enter:</label>
+      <input type="text" class="tag-input" id="tagInput" placeholder="e.g. SPX, butterfly" />
+    </div>
+    <div class="tags-container" id="tagsContainer"></div>
+    <textarea class="textarea" id="tradeNotes" placeholder="SPX 5180/5190/5200 0TDE
+butterfly, 7 DTE, IV:
+16%..."></textarea>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+
+  <!-- Upload ThinkOrSwim CSV Log -->
+  <div class="section">
+    <div class="section-title pink-title">Upload ThinkOrSwim CSV Log</div>
+    <div class="file-input">
+      <input type="file" id="csvFile" accept=".csv" />
+      <span class="status-text" id="fileStatus">No file chosen</span>
+    </div>
+  </div>
+
+  <!-- Journal Log History -->
+  <div class="section">
+    <div class="section-title pink-title">Journal Log History (Live from Firebase)</div>
+    <div class="button-group">
+      <button class="btn" onclick="exportToPDF()">Export to PDF</button>
+    </div>
+    <div class="form-row" style="margin-top: 8px;">
+      <label>Filter by Tag:</label>
+      <input type="text" id="filterTag" placeholder="e.g. SPX, butterfly" />
+      <button class="btn" onclick="exportToCSV()">Export to CSV</button>
+    </div>
+    <div class="form-row">
+      <label>Search notes:</label>
+      <input type="text" id="searchNotes" placeholder="e.g. SPX, butterfly, IV" />
+      <button class="btn" onclick="loadSavedNotes()">Load Saved Notes</button>
+    </div>
+  </div>
+
+  <!-- Pro Mode Login -->
+  <div class="section pro-section">
+    <div class="section-title pink-title">Pro Mode Login</div>
+    <div class="pro-text">This feature is reserved for subscribers. Log in to unlock strategy tagging, profit analytics, and premium exports.</div>
+    <div class="button-group">
+      <button class="btn btn-primary" onclick="loginWithGoogle()">Login with Google</button>
+    </div>
+    <div class="status-text">Not logged in</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="#">TradeWise Genius</a> | 
+    <a href="#">ThinkOrSwim by Charles Schwab</a> | 
+    <a href="#">Option Alpha Education</a> | 
+    <a href="#">Tastyworks</a> | 
+    <a href="#">Robinhood</a> | 
+    <a href="#">Interactive Brokers</a>
+    <br>
+    Pro Mode coming soon - analytics, strategy tagging, and cloud sync - <a href="#">buy cloud</a>
   </div>
 
   <script>
-    function calculateSigmaZones() {
-      const spot = parseFloat(document.getElementById('spot').value);
-      const iv = parseFloat(document.getElementById('iv').value) / 100;
-      const dte = parseFloat(document.getElementById('dte').value);
+    // σ-Distance Calculator
+    function calculateZones() {
+      const spot = parseFloat(document.getElementById('spotPrice').value);
+      const iv = parseFloat(document.getElementById('impliedVol').value) / 100;
+      const dte = parseFloat(document.getElementById('daysToExp').value);
 
       if (isNaN(spot) || isNaN(iv) || isNaN(dte)) {
-        document.getElementById('sigmaResults').innerText = 'Please fill in all values correctly.';
+        document.getElementById('sigmaResults').innerHTML = 'Please fill in all values correctly.';
         return;
       }
 
       const sqrtT = Math.sqrt(dte / 365);
-      const sd = spot * iv * sqrtT;
+      const oneStdDev = spot * iv * sqrtT;
 
-      let output = '';
-      for (let i = 1; i <= 5; i++) {
-        const low = (spot - i * sd).toFixed(2);
-        const high = (spot + i * sd).toFixed(2);
-        output += `<p><strong>${i}&sigma; range:</strong> ${low} – ${high}</p>`;
+      let results = '<strong>Standard Deviation Zones:</strong><br>';
+      for (let i = 1; i <= 3; i++) {
+        const lower = (spot - i * oneStdDev).toFixed(2);
+        const upper = (spot + i * oneStdDev).toFixed(2);
+        results += `${i}σ: ${lower} - ${upper}<br>`;
       }
 
-      document.getElementById('sigmaResults').innerHTML = output;
+      document.getElementById('sigmaResults').innerHTML = results;
+    }
+
+    // Trade Journal Functions
+    let savedTags = [];
+
+    function addSymbol(symbol) {
+      const textarea = document.getElementById('tradeNotes');
+      textarea.value += symbol + ' ';
+      textarea.focus();
+    }
+
+    function addTag(tagText) {
+      console.log('Adding tag:', tagText); // Debug log
+      if (tagText.trim() && !savedTags.includes(tagText.trim())) {
+        savedTags.push(tagText.trim());
+        renderTags();
+        console.log('Tags array:', savedTags); // Debug log
+      }
+    }
+
+    function removeTag(tagText) {
+      console.log('Removing tag:', tagText); // Debug log
+      savedTags = savedTags.filter(tag => tag !== tagText);
+      renderTags();
+    }
+
+    function renderTags() {
+      const container = document.getElementById('tagsContainer');
+      if (!container) {
+        console.error('Tags container not found!');
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      savedTags.forEach(tag => {
+        const tagElement = document.createElement('button');
+        tagElement.className = 'tag-pill';
+        tagElement.textContent = tag;
+        tagElement.onclick = () => removeTag(tag);
+        tagElement.title = 'Click to remove tag';
+        container.appendChild(tagElement);
+      });
+      
+      console.log('Rendered tags:', savedTags); // Debug log
+    }
+
+    function saveNote() {
+      const notes = document.getElementById('tradeNotes').value;
+      if (notes.trim()) {
+        alert('Note saved! (In production, this would save to Firebase)');
+        // In production: save to Firebase
+      }
+    }
+
+    // Tag input event listener
+    document.addEventListener('DOMContentLoaded', function() {
+      const tagInput = document.getElementById('tagInput');
+      
+      if (tagInput) {
+        tagInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const tagText = this.value.trim();
+            if (tagText) {
+              addTag(tagText);
+              this.value = '';
+            }
+          }
+        });
+      }
+    });
+
+    // File upload
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      document.getElementById('fileStatus').textContent = file ? file.name : 'No file chosen';
+    });
+
+    // Export functions
+    function exportToPDF() {
+      alert('PDF export feature (Pro Mode)');
+    }
+
+    function exportToCSV() {
+      alert('CSV export feature');
+    }
+
+    function loadSavedNotes() {
+      const filter = document.getElementById('filterTag').value;
+      const search = document.getElementById('searchNotes').value;
+      alert(`Loading notes... Filter: "${filter}", Search: "${search}"`);
+    }
+
+    // Pro Mode
+    function loginWithGoogle() {
+      alert('Google OAuth login (Pro Mode feature)');
     }
   </script>
 </body>
